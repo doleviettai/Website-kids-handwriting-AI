@@ -1,48 +1,43 @@
-# NétXinh — Thiết kế frontend
+# NétXinh — giao diện gia đình kết nối backend
 
-## Phạm vi bản đầu
+## Phong cách
 
-Giao diện tiếng Việt chạy độc lập bằng React + TypeScript + Vite. Dành cho trẻ mẫu giáo và lớp 1, cùng một hồ sơ bé trên trình duyệt. Chưa kết nối Spring Boot, MySQL hoặc Python AI.
+Giữ hướng dẫn `.claude/skills/tia-frontend-design-site/SKILL.md`: nền sáng, cream/coral/sky/mint/lavender, Nunito, Pip và minh họa SVG đã có. Trang đăng nhập/đăng ký có phần giới thiệu bên trái và form bên phải; điện thoại chuyển thành một cột. Thẻ hồ sơ, trạng thái lỗi và modal dùng tiếng Việt thân thiện. Có tắt chuyển động và hỗ trợ reduced motion.
 
-Áp dụng `.claude/skills/tia-frontend-design-site/SKILL.md`: nền sáng, cream, coral, sky, mint và lavender; font Nunito cho nội dung tiếng Việt; thẻ bo tròn và chuyển động nhẹ. Nhân vật cáo Pip, biểu tượng và minh họa được vẽ bằng SVG trong dự án. Các tham chiếu Next.js trong skill thuộc dự án gốc, không áp dụng trực tiếp vào Vite. Skill phụ `tia-frontend-design` không có trong các thư mục skill đã tìm, nên bản này sử dụng hướng dẫn trong repo.
+## Luồng hiện tại
 
-## Luồng chính
+Đăng ký/đăng nhập → tạo/chọn hồ sơ → góc học tập → thư viện → xem nội dung bài. Phụ huynh có thể chỉnh/xóa hồ sơ chưa có lịch sử. Trang tiến độ và huy hiệu đọc theo ID bé. ADMIN có trang tổng quan và danh sách tài khoản; chưa có CRUD nội dung hoặc trình vẽ template quản trị.
 
-1. Vào góc học tập, chọn cấp học và nhóm bài.
-2. Chọn bài và chữ/số/từ/câu cần luyện.
-3. Viết bằng Pointer Events trên canvas hoặc chọn ảnh/chụp camera.
-4. Lưu lượt luyện tập. Nội dung chờ AI, không sinh điểm nhận dạng giả.
-5. Xem lượt luyện trong hành trình và huy hiệu dựa trên số lần thực hành.
+Phần viết và nhận xét đang được chuẩn bị, chưa gọi Python hoặc tạo mock scoring. Không gắn canvas demo cũ vào hồ sơ database để tránh ghi local nhưng khiến người dùng tưởng đã lưu server.
 
-Canvas hỗ trợ chuột, ngón tay và bút cảm ứng, hoàn tác từng nét, xóa bài, đổi màu, bật/tắt gợi ý. Điểm nét chuẩn hóa về hệ tọa độ 900 × 420, gồm `x`, `y`, `t`. Chữ gợi ý dùng font hiển thị, chưa phải mẫu chữ viết tay chuẩn hay hoạt ảnh thứ tự nét.
+## Dữ liệu và thành phần
 
-## Ánh xạ dữ liệu
+| Vị trí                                      | Vai trò                                                      |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| `src/api/client.ts`                         | Axios, Bearer JWT, xử lý 401 và lỗi mạng                     |
+| `src/api/types.ts`                          | Kiểu dữ liệu DTO từ backend                                  |
+| `src/context/AuthProvider.tsx`              | Kiểm tra phiên, nhận token sau auth và logout                |
+| `src/context/WorkspaceProvider.tsx`         | Hồ sơ, bài học và tiến độ của bé đang chọn                   |
+| `src/hooks/useResource.ts`                  | Fetch có hủy request và trạng thái tải/lỗi theo khóa dữ liệu |
+| `src/pages/`                                | Các trang auth, hồ sơ, bài học, tiến độ, tài khoản, admin    |
+| `src/components/Modal.tsx`                  | Native dialog, focus trap và Escape                          |
+| `src/ConnectedApp.css`                      | Bố cục/form/trạng thái của luồng kết nối                     |
+| `src/App.css`, `src/components/Artwork.tsx` | Phong cách nền và artwork dùng lại                           |
 
-| Bảng                               | Giao diện                             | Trạng thái                                  |
-| ---------------------------------- | ------------------------------------- | ------------------------------------------- |
-| `users`                            | Góc ba mẹ                             | Chưa có xác thực hoặc tài khoản thật        |
-| `students`                         | Hồ sơ, tên, năm sinh, cấp học         | Một hồ sơ cục bộ                            |
-| `lessons`                          | Thẻ bài, bộ lọc cấp học               | Nội dung mẫu trong `src/data.ts`            |
-| `writing_items`                    | Chữ/số/từ/câu trong mỗi bài           | Nội dung mẫu, NFC khi lưu                   |
-| `ai_models`                        | Phân tuyến trong `modelTaskFor`       | Chưa gọi model                              |
-| `submissions`                      | Canvas, camera, lịch sử, chi tiết nét | Lưu cục bộ, điểm AI là `null`               |
-| `error_types`, `submission_errors` | Phản hồi sau chấm                     | Chờ AI, không tự bịa lỗi                    |
-| `student_progress`                 | Nội dung đã luyện, mục tiêu ngày      | Tổng hợp lượt lưu, chưa đánh dấu thành thạo |
+Hồ sơ/bài học/thống kê không fallback về `src/data.ts`. File đó chỉ còn được dùng cho nhãn cấp học/loại và nhóm bộ lọc; dữ liệu bài demo cũ không được nạp vào app. Các ID nội dung nhận trực tiếp từ API/MySQL.
 
-Phân tuyến đúng schema: `LETTER`, `DIGIT` → `SINGLE_CHAR`; `DIGRAPH` → `COMPOUND`; `WORD`, `SENTENCE` → `PARAGRAPH`.
+JWT dùng sessionStorage của tab; ID bé được chọn gắn theo ID tài khoản. Tùy chọn thiết bị dùng LocalStorage. Dữ liệu cũ và dữ liệu tài khoản không tự trộn. Khi đổi URL dữ liệu hoặc bé đang chọn, useResource không hiển thị response cũ và hủy request đang chạy để tránh lẫn hồ sơ.
 
-ID bài mẫu và ID nội dung dạng `lessonId:text` chỉ dùng frontend. Khi tích hợp phải lấy khóa chính database. `status: PENDING_AI` là trạng thái giao diện bổ sung, chưa có trong schema đã đưa. Ảnh cần upload và nhận `image_url` từ backend trước khi lưu chính thức.
+## Ánh xạ nghiệp vụ
 
-## Lưu trữ và giới hạn
+- `users`: đăng ký, đăng nhập, thông tin tài khoản; mật khẩu/BCrypt không trả về web.
+- `students`: CRUD biệt danh/năm sinh/cấp học, kiểm tra phụ huynh sở hữu ở service.
+- `lessons`, `writing_items`: thư viện, bộ lọc query URL, nội dung và SVG từ template_json có sẵn.
+- `submissions`, `student_progress`: chỉ đọc số liệu/lịch sử hiện có; chưa nộp hoặc chấm bài.
+- `ai_models`, `error_types`, `submission_errors`: chưa có màn CRUD hoặc kết quả nhận dạng.
 
-- LocalStorage lưu hồ sơ, nét bút và lịch sử sau khi tải lại trang.
-- Ảnh chỉ xem trong phiên hiện tại bằng object URL, chưa lưu LocalStorage/máy chủ. Có nút tải bài về tại màn luyện viết.
-- Thống kê và huy hiệu tính từ lượt luyện thật trên trình duyệt, không gán trước điểm/lịch sử mẫu.
-- Camera cần HTTPS hoặc localhost và quyền người dùng cấp; có thể chọn ảnh thay thế.
-- Phát âm dùng SpeechSynthesis `vi-VN`, phụ thuộc giọng thiết bị.
-- Font Google có thể cần mạng ở lần đầu; SVG được đóng gói cùng ứng dụng.
-- Có breakpoint cho điện thoại, tablet và desktop, tùy chọn tắt chuyển động và `prefers-reduced-motion`.
+Backend hiện không đổi schema. Chưa có cột daily_goal nên không hiển thị form lưu mục tiêu vào database.
 
-## Bước tích hợp tiếp theo
+## Xác minh
 
-Xác thực PARENT/ADMIN, nhiều hồ sơ bé, danh mục từ API, upload ảnh, API tạo bài viết và trạng thái xử lý, ba model AI, kết quả phân đoạn/lỗi, cập nhật tiến độ, trang quản trị. CAMERA phải giữ `direction_score` và `stroke_order_score` là `null` vì ảnh không có dữ liệu thời gian nét.
+Build/lint, kiểm tra API trên MySQL thật và E2E bằng Google Chrome. E2E kiểm tra đăng ký/CRUD/reload/chuyển bé/đăng xuất, lỗi mạng và tràn ngang ở 375px. Màn AI chưa triển khai, không coi kết quả kiểm tra auth/dữ liệu là kiểm tra nhận dạng chữ.

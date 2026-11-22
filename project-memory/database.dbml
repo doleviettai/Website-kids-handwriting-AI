@@ -1,0 +1,157 @@
+// Schema tham chiếu do người dùng cung cấp. Đã ánh xạ V1 trong backend.
+// Database local thực tế: kids_handwriting; Project dưới đây giữ tên gốc.
+// Không thêm status/PENDING_AI từ demo vào đây nếu chưa có quyết định thay đổi schema.
+Project kids_writing_ai {
+  database_type: 'MySQL'
+  Note: 'Luyện viết chữ, số tiếng Việt cho trẻ - 3 model: chữ đơn, chữ ghép, đoạn văn'
+}
+
+Enum user_role {
+  PARENT
+  ADMIN
+}
+
+Enum grade_level {
+  MAU_GIAO
+  LOP_1
+}
+
+Enum item_type {
+  LETTER
+  DIGIT
+  DIGRAPH
+  WORD
+  SENTENCE
+}
+
+Enum submission_source {
+  TOUCH
+  CAMERA
+}
+
+Enum model_task {
+  SINGLE_CHAR
+  COMPOUND
+  PARAGRAPH
+}
+
+// ============ NGƯỜI DÙNG ============
+Table users {
+  id bigint [pk, increment]
+  email varchar(255) [unique, not null]
+  password_hash varchar(255) [not null]
+  full_name varchar(100)
+  role user_role [not null, default: 'PARENT']
+  created_at datetime [default: `now()`]
+}
+
+Table students {
+  id bigint [pk, increment]
+  parent_id bigint [not null, ref: > users.id]
+  nickname varchar(50) [not null]
+  birth_year smallint
+  grade_level grade_level [not null]
+  created_at datetime [default: `now()`]
+}
+
+// ============ NỘI DUNG HỌC ============
+Table lessons {
+  id bigint [pk, increment]
+  title varchar(200) [not null]
+  grade_level grade_level [not null]
+  sort_order int [default: 0]
+}
+
+Table writing_items {
+  id bigint [pk, increment]
+  lesson_id bigint [ref: > lessons.id]
+  item_type item_type [not null]
+  text_value varchar(255) [not null, note: 'Chuẩn hóa NFC trước khi lưu. Câu dài nên để 255']
+  difficulty tinyint [default: 1]
+  template_json json [note: 'Mẫu chuẩn: {width, height, strokes: [[{x,y},...], ...]}. Với đoạn văn có thể để NULL']
+  sort_order int [default: 0]
+
+  Note: 'LETTER, DIGIT dùng model SINGLE_CHAR; DIGRAPH dùng COMPOUND; WORD, SENTENCE dùng PARAGRAPH'
+
+  indexes {
+    (item_type, text_value) [unique]
+  }
+}
+
+// ============ MODEL AI ============
+Table ai_models {
+  id int [pk, increment]
+  task model_task [not null]
+  name varchar(100) [not null]
+  version varchar(30) [not null, note: 'VD: v1, v2']
+  model_path varchar(255) [note: 'Đường dẫn trong ai-service/models, VD: single_char/v1']
+  is_active boolean [default: true, note: 'Mỗi task chỉ nên có 1 bản đang active']
+  created_at datetime [default: `now()`]
+
+  indexes {
+    (task, version) [unique]
+  }
+}
+
+// ============ BÀI VIẾT + KẾT QUẢ AI ============
+Table submissions {
+  id bigint [pk, increment]
+  student_id bigint [not null, ref: > students.id]
+  item_id bigint [not null, ref: > writing_items.id]
+  model_id int [ref: > ai_models.id, note: 'Model đã xử lý bài này']
+  source submission_source [not null]
+  image_url varchar(500)
+  stroke_data json [note: 'Chỉ có khi TOUCH: các nét, mỗi điểm gồm x, y, t']
+
+  // Kết quả nhận dạng
+  predicted_text varchar(500)
+  confidence decimal(5,4)
+  is_correct boolean [note: 'Chữ đơn/chữ ghép: predicted_text khớp item yêu cầu']
+  text_accuracy decimal(5,4) [note: 'Độ chính xác ký tự (1 - tỉ lệ lỗi). Chữ đơn: 1 hoặc 0; đoạn văn: dùng để chấm']
+  segments_json json [note: 'Chỉ đoạn văn: [{index, expected, predicted, confidence, score, bbox}] theo từng từ/chữ']
+
+  // Kết quả chấm điểm (0-100)
+  shape_score tinyint
+  similarity_score tinyint
+  direction_score tinyint [note: 'NULL nếu CAMERA']
+  stroke_order_score tinyint [note: 'NULL nếu CAMERA']
+  total_score tinyint
+  stars tinyint
+  feedback_text text
+
+  created_at datetime [default: `now()`]
+
+  indexes {
+    (student_id, item_id, created_at)
+  }
+}
+
+Table error_types {
+  id int [pk, increment]
+  code varchar(50) [unique, not null, note: 'VD: ROUND_TOO_OPEN, WRONG_START_POINT, STROKE_ORDER_WRONG, TOO_SMALL, WRONG_SPACING']
+  name_vi varchar(150) [not null]
+  feedback_template_vi text [not null]
+}
+
+Table submission_errors {
+  id bigint [pk, increment]
+  submission_id bigint [not null, ref: > submissions.id]
+  error_type_id int [not null, ref: > error_types.id]
+  segment_index tinyint [note: 'Chỉ đoạn văn: lỗi nằm ở chữ/từ thứ mấy']
+  stroke_index tinyint
+}
+
+// ============ TIẾN ĐỘ ============
+Table student_progress {
+  student_id bigint [not null, ref: > students.id]
+  item_id bigint [not null, ref: > writing_items.id]
+  attempts int [default: 0]
+  best_score tinyint
+  last_score tinyint
+  is_mastered boolean [default: false]
+  last_attempt_at datetime
+
+  indexes {
+    (student_id, item_id) [pk]
+  }
+}

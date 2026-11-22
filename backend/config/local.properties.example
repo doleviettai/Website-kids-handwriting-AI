@@ -1,0 +1,13 @@
+# Copy to local.properties. The real local.properties is ignored by Git.
+db.host=127.0.0.1
+db.port=3306
+db.name=kids_handwriting
+db.username=root
+db.password=CHANGE_ME
+
+# Required only for the first admin seed. Use your own local password.
+app.bootstrap.admin.email=admin@netxinh.local
+app.bootstrap.admin.password=CHANGE_ME
+
+# Generate 32 random bytes and encode as Base64. Never commit the real key.
+app.jwt.secret=CHANGE_ME_BASE64_32_BYTES

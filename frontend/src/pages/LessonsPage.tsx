@@ -294,17 +294,27 @@ export function LessonDetailPage() {
                   viewBox={`0 0 ${item.template.width} ${item.template.height}`}
                   aria-label={`Mẫu nét tham khảo ${item.textValue}`}
                 >
-                  {item.template.strokes.map((stroke, i) => (
-                    <polyline
-                      key={i}
-                      points={stroke.map((p) => `${p.x},${p.y}`).join(' ')}
-                      fill="none"
-                      stroke="#a58bbd"
-                      strokeWidth="7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  ))}
+                  {item.template.strokes.map((stroke, i) =>
+                    stroke.length === 1 ? (
+                      <circle
+                        key={i}
+                        cx={stroke[0].x}
+                        cy={stroke[0].y}
+                        r={3.5}
+                        fill="#a58bbd"
+                      />
+                    ) : (
+                      <polyline
+                        key={i}
+                        points={stroke.map((p) => `${p.x},${p.y}`).join(' ')}
+                        fill="none"
+                        stroke="#a58bbd"
+                        strokeWidth="7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    ),
+                  )}
                 </svg>
               )}
               <div className="model-coming">

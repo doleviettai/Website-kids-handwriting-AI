@@ -1,6 +1,6 @@
 # Kid Handwriting AI — ngữ cảnh hiện tại
 
-Cập nhật: 22/11/2026. Nguồn: yêu cầu người dùng và code đã triển khai/kiểm tra trong repo.
+Cập nhật: 24/11/2026. Nguồn: yêu cầu người dùng và code đã triển khai/kiểm tra trong repo.
 
 ## Mục tiêu và phạm vi
 
@@ -9,6 +9,8 @@ Cập nhật: 22/11/2026. Nguồn: yêu cầu người dùng và code đã tri�
 Model đang train, người dùng yêu cầu làm chức năng/database trước và **hoãn nhận dạng/chấm chữ đơn, chữ ghép, đoạn văn**. Không gọi Python, không tạo điểm giả. [Đặc tả đầy đủ](prompts/04-full-project-spec.md) giữ nội dung gốc và các điều chỉnh sau đó.
 
 Sau bước database, người dùng đã yêu cầu **sửa frontend** vì bản demo không thay đổi. Phạm vi mới cho phép nối frontend cùng các API cần thiết: đăng ký/đăng nhập, hồ sơ nhiều bé, bài học và dữ liệu tiến độ. Không dừng ở điểm bàn giao bước 1 cũ; luồng tích hợp này đã được thực hiện.
+
+Ngày 24/11/2026 yêu cầu bổ sung CRUD quản trị bài học/nội dung/loại lỗi và canvas tạo template_json đã được thực hiện. Người dùng đã trả lời rõ: **PARENT quản lý các bé thuộc tài khoản của mình**, không chia sẻ hồ sơ cho tài khoản khác. Các chức năng quản lý model và nhận dạng vẫn ngoài phạm vi đợt này.
 
 ## Kiến trúc hiện tại
 
@@ -56,6 +58,9 @@ Schema tham chiếu [database.dbml](database.dbml) có 9 bảng: `users`, `stude
 | `/thanh-tich` | Huy hiệu theo số bài thật, không giả lập |
 | `/cai-dat` | Thông tin tài khoản và tùy chọn thiết bị |
 | `/quan-tri` | ADMIN: thống kê, tài khoản phân trang, xem thư viện |
+| `/quan-tri/bai-hoc` | ADMIN: thêm/sửa/xóa bài học, thứ tự/cấp học, liên kết quản lý nội dung |
+| `/quan-tri/noi-dung` | ADMIN: CRUD nội dung, chọn/chuyển bài, vẽ và lưu mẫu nét |
+| `/quan-tri/loai-loi` | ADMIN: CRUD mã/tên/mẫu phản hồi tiếng Việt và xem trước |
 
 Các URL `/luyen-viet` cũ chuyển về trang nội dung. Canvas demo cũ còn file nhưng **không được mount** trong luồng database mới; không lưu bài local rồi báo như đã lưu server. Phần viết/nhận xét hiển thị đang chuẩn bị theo yêu cầu hoãn model.
 
@@ -64,6 +69,12 @@ Chưa đăng nhập được chuyển về `/dang-nhap`. Axios gắn JWT, 401 k�
 ## API đã có
 
 `/api/auth/register`, `/login`, `/me`, `/logout`; CRUD `/api/students`; `/api/students/{id}/overview`, `/submissions?page=0`; `/api/lessons`, `/api/lessons/{id}`; `/api/admin/overview`, `/api/admin/users?page=0`; `/api/system/health`.
+
+ADMIN đã có GET/POST `/api/admin/lessons`, `/items`, `/error-types` và PUT/DELETE từng `/{id}`. Giữ nguyên schema, không sửa migration. Các form kiểm tra hợp lệ, NFC, duplicate; nội dung LETTER một chữ, DIGIT 0–9, DIGRAPH 2–3 chữ, WORD/SENTENCE tối đa 255 ký tự. Có thể chưa xếp bài (`lessonId=null`).
+
+Không xóa bài học còn nội dung; chuyển/xóa nội dung trước. Nội dung có bài/tiến độ không được xóa hoặc đổi chữ/loại, nhưng vẫn sửa được mẫu/độ khó/thứ tự/bài. Loại lỗi đã dùng không được xóa/đổi mã; vẫn sửa tên và phản hồi. Trả 409 với lý do, không cascade xóa lịch sử.
+
+`DrawingCanvas` tái sử dụng ở frontend: Pointer Events, một pointer, hoàn tác/bỏ mẫu, số thứ tự điểm bắt đầu, replay và tải JSON. Lưu `template_json={width,height,strokes}` ở tọa độ 900 × 420; mẫu null nếu trống. API kiểm tra khung 1–4096, 1–100 nét, tối đa 20.000 điểm và tọa độ hữu hạn trong khung. Chữ font gợi ý không phải nét chuẩn tự động. Admin phải vẽ/duyệt nội dung chuẩn. Phụ huynh đọc mẫu từ thư viện khi tải lại trang/đăng nhập lại.
 
 Controller trả DTO, không trả entity/password hash. API admin chỉ ADMIN, API bé chỉ PARENT. Vite proxy mặc định backend 8080, có thể đổi bằng `API_PROXY_TARGET`. Khi deploy phải cấu hình reverse proxy và SPA fallback riêng. Hướng dẫn chi tiết: `backend/README.md`, `frontend/README.md`.
 
@@ -80,4 +91,4 @@ Controller trả DTO, không trả entity/password hash. API admin chỉ ADMIN, 
 
 Đọc `.claude/skills/tia-frontend-design-site/SKILL.md` khi làm UI. Giữ nền sáng pastel, coral, Nunito, Pip/SVG, chuyển động nhẹ/tắt motion. Không chuyển repo sang Next.js theo các tham chiếu dự án gốc trong skill. Chi tiết frontend tại `frontend/docs/DESIGN.md`.
 
-Admin hiện chỉ xem tổng quan/danh sách/thư viện. CRUD nội dung/lỗi/model, vẽ template quản trị, nộp bài, ảnh, kết quả chấm và Swagger chưa làm. Tiếp tục theo yêu cầu mới của người dùng; không suy diễn toàn bộ đặc tả đã xong.
+Admin đã quản lý bài học/nội dung/mẫu nét/loại lỗi và phản hồi. Quản lý phiên bản model, nộp bài/ảnh, kết quả chấm và Swagger chưa làm. Tiếp tục theo yêu cầu mới của người dùng; không suy diễn toàn bộ đặc tả đã xong.

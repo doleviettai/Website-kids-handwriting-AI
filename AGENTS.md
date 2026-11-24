@@ -15,6 +15,7 @@
 - Giữ lại thay đổi sẵn có của người dùng; không tự khôi phục file đã bị xóa hoặc ghi đè phần việc khác.
 - Không tạo điểm nhận dạng hoặc nhận xét AI giả. Giao diện hiện chờ kết nối model.
 - Đặc tả đầy đủ ở `project-memory/prompts/04-full-project-spec.md`. Yêu cầu mới nhất đã cho phép nối frontend và các API cần thiết: auth JWT, hồ sơ bé, nội dung và dữ liệu tiến độ. Không dừng ở điểm chờ bước 1 cũ khi xử lý yêu cầu tích hợp này. Model/nhận dạng/chấm bài vẫn hoãn, chưa gọi Python.
+- Ngày 24/11/2026 người dùng yêu cầu CRUD ADMIN bài học, nội dung, canvas mẫu nét và loại lỗi/phản hồi. Đã xác nhận PARENT chỉ quản lý các bé thuộc tài khoản của mình, không chia sẻ/chuyển quyền sang tài khoản khác. Không mở truy cập chéo hồ sơ.
 - CAMERA không có dữ liệu thời gian nét: `direction_score` và `stroke_order_score` phải là `NULL`.
 - Sau thay đổi đáng kể, cập nhật `project-memory/STATUS.md`; cập nhật `PROJECT_CONTEXT.md` nếu có quyết định mới về phạm vi/kiến trúc.
 - Ghi chính xác kiểm tra đã chạy và giới hạn chưa xác minh. Không đưa mật khẩu, token, ảnh trẻ hoặc thông tin riêng tư vào tài liệu ngữ cảnh/prompt.

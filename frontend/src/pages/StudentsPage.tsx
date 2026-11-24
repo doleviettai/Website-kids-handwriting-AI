@@ -18,7 +18,7 @@ function StudentEditor({
 }: {
   student: Student | null
   onClose: () => void
-  onSaved: () => void
+  onSaved: (student: Student) => void
 }) {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('')
@@ -38,9 +38,10 @@ function StudentEditor({
     setBusy(true)
     setError('')
     try {
-      if (student) await api.put(`/students/${student.id}`, input)
-      else await api.post('/students', input)
-      onSaved()
+      const response = student
+        ? await api.put<Student>(`/students/${student.id}`, input)
+        : await api.post<Student>('/students', input)
+      onSaved(response.data)
     } catch (failure) {
       setError(apiError(failure))
     } finally {
@@ -181,10 +182,11 @@ export function StudentsPage() {
   const [editor, setEditor] = useState<Student | 'new' | null>(null)
   const [deleting, setDeleting] = useState<Student | null>(null)
   const [notice, setNotice] = useState('')
-  function saved() {
+  function saved(student: Student) {
     setEditor(null)
+    choose(student.id)
     students.reload()
-    setNotice('Hồ sơ bé đã được lưu. Ba mẹ chọn bé để bắt đầu nhé!')
+    setNotice(`Đã lưu hồ sơ ${student.nickname} và chọn bé để vào học.`)
   }
   return (
     <div className="page-enter">
@@ -192,7 +194,10 @@ export function StudentsPage() {
         <div>
           <span className="eyebrow">MỖI BÉ MỘT HÀNH TRÌNH RIÊNG</span>
           <h1>Hôm nay ai học cùng Pip?</h1>
-          <p>Chọn hồ sơ của bé, cùng mở ra một ngày học thật vui.</p>
+          <p>
+            Thêm em bé, chỉnh biệt danh hoặc cấp học và chọn hồ sơ của con để
+            vào học.
+          </p>
         </div>
         <button className="primary-button" onClick={() => setEditor('new')}>
           <Icon name="user" size={19} /> Thêm hồ sơ bé
@@ -293,8 +298,9 @@ export function StudentsPage() {
       <div className="family-note">
         <Icon name="shield" size={23} />
         <p>
-          Hồ sơ được lưu trong tài khoản của ba mẹ. Khi đăng nhập lại, gia đình
-          có thể tiếp tục với các hồ sơ đã tạo.
+          Ba mẹ chỉ xem và chỉnh sửa các hồ sơ thuộc tài khoản đang đăng nhập.
+          Hồ sơ của tài khoản khác được bảo vệ. Thông tin các bé được lưu lại
+          khi gia đình đăng nhập lần sau.
         </p>
       </div>
       {editor && (

@@ -51,6 +51,12 @@ Tài khoản admin local: email `admin@netxinh.local`, mật khẩu xem `app.boo
 | `GET /api/lessons`, `GET /api/lessons/{id}` | JWT: nội dung từ MySQL và template nếu có |
 | `GET /api/admin/overview` | ADMIN: thống kê tổng quan |
 | `GET /api/admin/users?page=0` | ADMIN: danh sách tài khoản, 20 bản ghi/trang |
+| `GET/POST /api/admin/lessons` | ADMIN: danh sách và tạo bài học |
+| `PUT/DELETE /api/admin/lessons/{id}` | ADMIN: sửa hoặc xóa bài học trống |
+| `GET/POST /api/admin/items` | ADMIN: danh sách/tạo chữ, số, chữ ghép, từ, câu |
+| `PUT/DELETE /api/admin/items/{id}` | ADMIN: sửa nội dung/mẫu nét hoặc xóa nội dung chưa có lịch sử |
+| `GET/POST /api/admin/error-types` | ADMIN: danh sách/tạo loại lỗi và mẫu phản hồi tiếng Việt |
+| `PUT/DELETE /api/admin/error-types/{id}` | ADMIN: chỉnh sửa/xóa loại lỗi |
 
 Frontend gọi qua Vite proxy `/api`, không cần CORS khi dùng proxy này. API lỗi trả JSON với `message` tiếng Việt, validation Jakarta và kiểm tra sở hữu ở service. Backend không trả entity trực tiếp.
 
@@ -65,8 +71,18 @@ HS256, thời hạn 1 giờ, secret cấu hình riêng. Backend giữ allowlist 
 java -jar build/libs/backend-0.0.1-SNAPSHOT.jar
 ```
 
-11 test tích hợp MySQL thật: 7 test schema/seed/JSON/NFC/unique/khóa ghép/giới hạn CAMERA và 4 test HTTP auth/CRUD/quyền sở hữu/role/validation/logout. Dữ liệu test được rollback, không reset database; AUTO_INCREMENT có thể có khoảng trống. Đối chiếu bộ seed gốc khi chạy test trên database local.
+16 test tích hợp MySQL thật: 7 test persistence, 4 test auth/gia đình và 5 test quản trị nội dung. Kiểm tra CRUD, NFC, mẫu JSON, ràng buộc xóa, quyền ADMIN, chặn truy cập hồ sơ gia đình khác và gán owner theo tài khoản đăng nhập. Dữ liệu test được rollback, không reset database; AUTO_INCREMENT có thể có khoảng trống. Các test seed vẫn đối chiếu số lượng seed gốc, nên chạy trên database local dành cho phát triển trước khi thêm nội dung thật.
+
+## Quản trị nội dung và mẫu nét
+
+Giữ nguyên schema; không cần migration mới. Request bài học: `title`, `gradeLevel`, `sortOrder`. Request nội dung: `lessonId` (nullable), `itemType`, `textValue`, `difficulty` (1–3), `sortOrder`, `template` (nullable, lưu vào `template_json`).
+
+`template` gồm `{width,height,strokes:[[{x,y,t?}]]}`. Canvas mới lưu 900 × 420; API nhận khung 1–4096, tối đa 100 nét/20.000 điểm, tất cả tọa độ hữu hạn và trong khung. Mẫu không có nét phải gửi `null`. Chữ đơn đúng một ký tự chữ sau NFC; số một ký tự 0–9; chữ ghép 2–3 ký tự chữ; từ/câu tối đa 255 ký tự. Index unique giữ nội dung mỗi loại duy nhất trong toàn thư viện, không chỉ trong một bài.
+
+Không xóa bài học còn nội dung; cần chuyển/xóa nội dung trước. Không xóa nội dung đã có bài viết/tiến độ hoặc đổi chữ/loại của nội dung đã được sử dụng; vẫn sửa được mẫu/độ khó/thứ tự/bài học. Loại lỗi đã dùng không được xóa/đổi mã, nhưng vẫn sửa tên và phản hồi. Các trường hợp này trả HTTP 409 và lý do tiếng Việt; FK vẫn bảo vệ database nếu có cập nhật đồng thời.
+
+PARENT tạo/sửa hồ sơ qua `/api/students` như trước: owner lấy từ JWT, không tin `parentId` trong body. Không có API PARENT chuyển hoặc quản lý hồ sơ tài khoản khác. Hồ sơ đã có lịch sử/tiến độ không bị xóa tự động.
 
 ## Phần còn lại
 
-CRUD nội dung/lỗi/model, trình vẽ template admin, nộp bài, lưu ảnh, chấm điểm và Swagger chưa triển khai. Đặc tả đầy đủ ở [kho prompt](../project-memory/prompts/04-full-project-spec.md). Khi model sẵn sàng mới chốt AiRequest/AiResult, thêm AiClient/HttpAiClient và cấu hình `ai.mode=http`. Không tự bật MockAiClient. CAMERA không có điểm hướng/thứ tự nét.
+Quản lý phiên bản model, nộp bài, lưu ảnh, chấm điểm và Swagger chưa triển khai. Đặc tả đầy đủ ở [kho prompt](../project-memory/prompts/04-full-project-spec.md). Khi model sẵn sàng mới chốt AiRequest/AiResult, thêm AiClient/HttpAiClient và cấu hình `ai.mode=http`. Không tự bật MockAiClient. CAMERA không có điểm hướng/thứ tự nét.

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useResource } from '../hooks/useResource'
 import type { Account, AdminOverview } from '../api/types'
 import { useWorkspace } from '../context/workspace-context'
@@ -26,6 +27,32 @@ export function AdminPage() {
         <span className="admin-role">
           <Icon name="shield" size={18} /> Quản trị viên
         </span>
+      </div>
+      <div className="admin-shortcuts">
+        <Link to="/quan-tri/bai-hoc">
+          <Icon name="book" size={23} />
+          <div>
+            <strong>Quản lý bài học</strong>
+            <span>Thêm, sửa và sắp xếp bài học</span>
+          </div>
+          <Icon name="arrow" size={18} />
+        </Link>
+        <Link to="/quan-tri/noi-dung">
+          <Icon name="pen" size={23} />
+          <div>
+            <strong>Nội dung & mẫu nét</strong>
+            <span>Chữ, số, từ, câu và trình vẽ mẫu</span>
+          </div>
+          <Icon name="arrow" size={18} />
+        </Link>
+        <Link to="/quan-tri/loai-loi">
+          <Icon name="heart" size={23} />
+          <div>
+            <strong>Loại lỗi & phản hồi</strong>
+            <span>Góp ý tiếng Việt phù hợp với bé</span>
+          </div>
+          <Icon name="arrow" size={18} />
+        </Link>
       </div>
       {summary.loading ? (
         <Loading />

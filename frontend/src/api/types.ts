@@ -29,7 +29,19 @@ export type WritingItem = {
   textValue: string
   difficulty: number
   sortOrder: number
-  template: { width: number; height: number; strokes: Stroke[] } | null
+  template: WritingTemplate | null
+}
+export type WritingTemplate = {
+  width: number
+  height: number
+  strokes: Stroke[]
+}
+export type AdminItem = WritingItem & { lessonId: number | null }
+export type ErrorType = {
+  id: number
+  code: string
+  nameVi: string
+  feedbackTemplateVi: string
 }
 export type ApiLesson = {
   id: number

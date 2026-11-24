@@ -26,6 +26,9 @@ import { LessonsPage, LessonDetailPage } from './pages/LessonsPage'
 import { AchievementsPage, JourneyPage } from './pages/JourneyPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { AdminPage } from './pages/AdminPage'
+import { AdminLessonsPage } from './pages/admin/AdminLessonsPage'
+import { AdminItemsPage } from './pages/admin/AdminItemsPage'
+import { AdminErrorsPage } from './pages/admin/AdminErrorsPage'
 import { gradeLabels } from './data'
 import './App.css'
 import './ConnectedApp.css'
@@ -159,6 +162,24 @@ function Shell() {
           icon: 'chart',
           label: 'Tổng quan quản trị',
           end: true,
+        },
+        {
+          to: '/quan-tri/bai-hoc',
+          icon: 'book',
+          label: 'Quản lý bài học',
+          end: false,
+        },
+        {
+          to: '/quan-tri/noi-dung',
+          icon: 'pen',
+          label: 'Nội dung & mẫu nét',
+          end: false,
+        },
+        {
+          to: '/quan-tri/loai-loi',
+          icon: 'heart',
+          label: 'Loại lỗi & phản hồi',
+          end: false,
         },
         {
           to: '/bai-hoc',
@@ -473,6 +494,30 @@ export default function App() {
               }
             />
             <Route path="/cai-dat" element={<SettingsPage />} />
+            <Route
+              path="/quan-tri/bai-hoc"
+              element={
+                <RolePage role="ADMIN">
+                  <AdminLessonsPage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/quan-tri/noi-dung"
+              element={
+                <RolePage role="ADMIN">
+                  <AdminItemsPage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/quan-tri/loai-loi"
+              element={
+                <RolePage role="ADMIN">
+                  <AdminErrorsPage />
+                </RolePage>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

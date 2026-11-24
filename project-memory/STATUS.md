@@ -1,6 +1,18 @@
 # Trạng thái và bàn giao
 
-Cập nhật: 22/11/2026. Công việc mới nhất: người dùng yêu cầu sửa frontend; đã nối auth/hồ sơ/bài học/tiến độ với API và MySQL. Phần model tiếp tục hoãn.
+Cập nhật: 24/11/2026. Công việc mới nhất: CRUD quản trị bài học/nội dung, canvas mẫu nét, loại lỗi/phản hồi và xác nhận phạm vi hồ sơ PARENT. Phần model tiếp tục hoãn.
+
+## Đợt bổ sung ngày 24/11/2026
+
+- Người dùng đã xác nhận PARENT chỉ quản lý các bé thuộc tài khoản mình; không chia sẻ/chuyển hồ sơ giữa tài khoản. Truy cập chéo tiếp tục bị chặn ở service.
+- Backend `AdminContentController`, `AdminContentService`, `AdminContentDtos`: CRUD bài học, nội dung và loại lỗi; trả DTO, validate request/NFC/duplicate, kiểm tra template JSON và dữ liệu đã dùng trước khi xóa/sửa định danh.
+- ADMIN có menu/trang `/quan-tri/bai-hoc`, `/quan-tri/noi-dung`, `/quan-tri/loai-loi`, bộ lọc query URL, form và hộp xác nhận xóa. Tổng quan có lối tắt đến ba trang mới.
+- Canvas dùng Pointer Events lưu mẫu 900 × 420; hỗ trợ undo, bỏ mẫu, xem thứ tự nét, tải JSON, mẫu được giữ khi sửa/tải lại; khung hiển thị được kiểm tra trên điện thoại 375px. Tọa độ/giới hạn được kiểm tra ở API, không giả lập nhận dạng.
+- Khi PARENT thêm/sửa hồ sơ thành công, chọn đúng bé vừa lưu; thêm mô tả phạm vi quyền trên trang hồ sơ. Không dùng parentId từ body để gán owner.
+- Quy tắc bảo toàn: bài học còn nội dung chưa xóa được; nội dung đã có bài/tiến độ không xóa/đổi chữ/loại; lỗi đã dùng không xóa/đổi mã. Cho phép chỉnh phần không làm đổi định danh, hiển thị lỗi 409 bằng tiếng Việt.
+- Không sửa schema hoặc migration đã chạy, không sửa Python/model. `ai-server/model/` là thay đổi chưa theo dõi sẵn có khi bắt đầu; giữ nguyên.
+- Kiểm tra cuối: build/lint frontend đạt, 16 test backend đạt (11 cũ + 5 admin), **3 E2E đạt trong một lượt** (CRUD admin/canvas/feedback, lỗi mạng mobile và luồng gia đình). Đã xem ảnh QA desktop và canvas 375px, kiểm tra cả vùng dialog không tràn ngang. ESLint bỏ qua output test-results/playwright-report để không xung đột khi E2E tạo/xóa báo cáo.
+- Server kiểm tra dùng backend 18080, Vite 15173, được dừng trước bàn giao để tránh chiếm cổng. Người dùng cần chạy lại backend/frontend để nạp mã mới. Dữ liệu E2E gắn UUID đã được dọn, migration/schema không đổi.
 
 ## Cập nhật tài khoản admin gần nhất
 
@@ -14,7 +26,7 @@ Theo yêu cầu người dùng, đã đổi mật khẩu của đúng tài kho�
 - CRUD hồ sơ bé trên MySQL; danh sách nhiều bé, bộ chọn trên header, sửa/xóa bằng modal. Profile có lịch sử/tiến độ được giữ lại, trả 409 nếu xóa.
 - Trang chào gia đình chưa có bé, dashboard theo bé, danh mục thật 6 bài/58 nội dung, bộ lọc query URL và trang chi tiết bài/mẫu nét.
 - Tiến độ/huy hiệu/lịch sử phân trang đọc từ MySQL theo bé; hồ sơ mới là rỗng, không gán dữ liệu mẫu.
-- ADMIN có trang tổng quan, thống kê, danh sách tài khoản phân trang và xem thư viện. Chưa có CRUD nội dung/template admin.
+- ADMIN có trang tổng quan, thống kê, danh sách tài khoản phân trang, thư viện và các trang CRUD/mẫu nét nêu ở đợt 24/11.
 - Axios + interceptor Bearer/401, React Context, request cancellation khi đổi hồ sơ, lỗi/tải/thử lại; không dùng dữ liệu demo làm fallback.
 - Vite proxy `/api` → backend mặc định 8080; test có thể đổi `API_PROXY_TARGET`.
 - Sidebar điện thoại có cuộn; đã sửa lỗi nút logout nằm ngoài viewport. Modal có focus trap/Escape. Chụp kiểm tra desktop/375px, không tràn ngang ở các màn đã kiểm tra.
@@ -61,7 +73,7 @@ Config local `backend/config/local.properties`, app đọc từ cwd backend ho�
 
 - Nhận dạng/chấm chữ đơn, chữ ghép, đoạn văn; AiClient/mock/HTTP và Python API.
 - Nộp bài, upload ảnh/FileStorageService, kết quả phân đoạn/lỗi và cập nhật tiến độ từ bài mới.
-- CRUD admin lessons/items/error_types/models, vẽ template, Swagger.
+- Quản lý phiên bản model và Swagger; CRUD bài/nội dung/lỗi và canvas mẫu nét đã có.
 - Refresh token/Redis/đa instance; hiện đăng xuất offline chỉ xóa phiên trình duyệt, token server hết hạn sau tối đa 1 giờ hoặc khi restart.
 - Nhập dữ liệu demo local cũ vào tài khoản thật (không tự thực hiện).
 

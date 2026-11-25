@@ -8,7 +8,15 @@ Giữ hướng dẫn `.claude/skills/tia-frontend-design-site/SKILL.md`: nền s
 
 Đăng ký/đăng nhập → tạo/chọn hồ sơ → góc học tập → thư viện → xem nội dung bài. Phụ huynh quản lý hồ sơ thuộc tài khoản của mình, lưu xong sẽ chọn bé đó. Trang tiến độ và huy hiệu đọc theo ID bé. ADMIN có tổng quan, tài khoản, CRUD bài học/nội dung/loại lỗi và canvas tạo mẫu nét.
 
-Phần viết và nhận xét đang được chuẩn bị, chưa gọi Python hoặc tạo mock scoring. Không gắn canvas demo cũ vào hồ sơ database để tránh ghi local nhưng khiến người dùng tưởng đã lưu server.
+Phần luyện viết đã nối FastAPI/model thật qua Java API. `PracticePage` dùng `DrawingCanvas` ở mode practice, `SubmissionResult` hiển thị kết quả, nét đã lưu và mã lỗi. Mẫu admin và nét học sinh dùng cùng cấu trúc tọa độ, nhưng không gửi chữ gợi ý vào model. Canvas demo cũ không còn dùng để lưu bài local. Camera chưa hỗ trợ bởi checkpoint online hiện có.
+
+## Chế độ canvas đã sửa theo demo gốc
+
+`/luyen-tap/chu-don`: khung vuông 1:1, chuẩn420×420 và dòng kẻ giống serve.py. `/luyen-tap/chu-ghep`: khung5:2, chuẩn900×360, có ảnh sau preprocessing. `/luyen-tap/doan-van`: canvas từ5:2 và document các từ đã chốt, preview trước commit/sửa từ cuối/Space. Các tỷ lệ giữ trên mobile; không có min-height kéo méo canvas. Template admin giữ chuẩn900×420 để tương thích mẫu đã có.
+
+Canvas practice mặc định tắt font gợi ý, giữ coalesced events và tọa độ float, không lọc bỏ điểm nét ngắn. Các lớp guide không gửi cho recognizer. Preview do useRecognition quản lý theo object drawing, có debounce tùy chọn, cancellation và invalidation; thay nét không được hiển thị kết quả request trước. Preview không lưu lượt/tiến độ.
+
+Nhận dạng thử hiển thị text/confidence/candidates, word có mức hỗ trợ ký tự và gợi ý từ điển riêng. Document hiển thị chính visual text, không tự chọn gợi ý thành chữ của bé. Chỉ chốt từ sau inference thành công, chỉ gửi cả bài khi không còn từ dang dở. Word scoring bỏ qua hoa/thường/dấu câu như demo gốc và chú thích rõ. Kết quả saved có task để hiển thị nét đúng tỷ lệ; dữ liệu lưu vẫn theo900×420 đã có để không đổi schema.
 
 ## Dữ liệu và thành phần
 
@@ -33,11 +41,16 @@ JWT dùng sessionStorage của tab; ID bé được chọn gắn theo ID tài kh
 - `users`: đăng ký, đăng nhập, thông tin tài khoản; mật khẩu/BCrypt không trả về web.
 - `students`: CRUD biệt danh/năm sinh/cấp học, kiểm tra phụ huynh sở hữu ở service.
 - `lessons`, `writing_items`: thư viện và CRUD admin, bộ lọc query URL, chuyển nội dung giữa bài, SVG từ template_json do admin vẽ.
-- `submissions`, `student_progress`: chỉ đọc số liệu/lịch sử hiện có; chưa nộp hoặc chấm bài.
+- `submissions`, `student_progress`: lưu bài/kết quả/lỗi và cập nhật lượt/điểm theo bé; lỗi AI không tạo bài hoàn thành giả. Có trang xem lại riêng.
 - `error_types`: CRUD mã/tên/mẫu phản hồi, xem trước lời nhắn cho bé. Lỗi đã dùng được bảo toàn.
-- `ai_models`, `submission_errors`: chưa có màn quản lý model hoặc kết quả nhận dạng.
+- `ai_models`: gắn model path/version đã xử lý và hiển thị readiness; chưa có CRUD phiên bản model.
+- `submission_errors`: báo từng lỗi trong chi tiết, nhóm lỗi trên trang phụ huynh, danh sách bài cần xem lại cho admin. Chuông dẫn tới báo cáo trong app, chưa có push/email/đã đọc.
+
+Model word là CTC mức từ, UI chốt từng từ để tránh gán nhầm toàn trang cho model từ. Các tiêu chí thiếu dữ liệu để NULL và hiển thị “—”; không dùng confidence làm điểm đẹp chữ. Điểm từ hình học mẫu được chú thích là tham khảo, nhận dạng-only không được coi là thành thạo viết. Độ tin cậy thấp nhắc phụ huynh kiểm tra, không khẳng định lỗi của trẻ.
 
 Backend hiện không đổi schema. Chưa có cột daily_goal nên không hiển thị form lưu mục tiêu vào database.
+
+Ngày 25/11/2026: người dùng đổi chính sách xóa bài học. Hộp xác nhận ghi “Xóa vĩnh viễn”, số nội dung của bài và toàn bộ bài viết/kết quả/lỗi/tiến độ liên quan sẽ bị xóa, không thể hoàn tác. ADMIN không cần chuyển nội dung trước khi xóa bài. Sau khi xóa, thư viện được tải lại; số liệu parent thay đổi theo dữ liệu còn lại khi tải lại trang. Quyền PARENT vẫn giới hạn hồ sơ riêng và không được gọi API xóa bài. Xóa riêng item/error type chưa thay đổi chính sách.
 
 Các trang admin ở `src/pages/admin/`, canvas dùng lại ở `src/components/DrawingCanvas.tsx`, xác nhận xóa ở `DeleteDialog.tsx`. Canvas admin lưu mẫu theo pointerdown/up, pointercancel hủy nét dang dở; pointer capture cho phép kéo ra ngoài và kẹp tọa độ trong khung. Chỉ một pointer hoạt động. Số tròn là lớp hiển thị, không ghi thành nét của mẫu. Mẫu lưu ở 900 × 420, có thể NULL; không tạo mẫu “chuẩn” tự động từ font. Replay chỉ chạy khi bấm xem, có nút dừng. API kiểm tra kích thước và tọa độ mẫu.
 

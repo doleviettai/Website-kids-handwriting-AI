@@ -29,6 +29,14 @@ export function AdminPage() {
         </span>
       </div>
       <div className="admin-shortcuts">
+        <Link to="/quan-tri/bai-viet">
+          <Icon name="chart" size={23} />
+          <div>
+            <strong>Bài viết & thông báo</strong>
+            <span>Xem lỗi, kết quả nhận dạng và trạng thái model</span>
+          </div>
+          <Icon name="arrow" size={18} />
+        </Link>
         <Link to="/quan-tri/bai-hoc">
           <Icon name="book" size={23} />
           <div>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useWorkspace } from '../context/workspace-context'
 import { useResource } from '../hooks/useResource'
-import type { HistoryPage } from '../api/types'
+import type { HistoryPage, Attention } from '../api/types'
 import { ErrorPanel, Loading } from '../components/Feedback'
 import { Icon } from '../components/Icons'
 import { Mascot } from '../components/Artwork'
@@ -12,6 +12,9 @@ export function JourneyPage({ parent = false }: { parent?: boolean }) {
   const [page, setPage] = useState(0)
   const history = useResource<HistoryPage>(
     selected ? `/students/${selected.id}/submissions?page=${page}` : null,
+  )
+  const attention = useResource<Attention[]>(
+    selected ? `/students/${selected.id}/attention` : null,
   )
   if (students.loading) return <Loading />
   if (students.error)
@@ -58,6 +61,40 @@ export function JourneyPage({ parent = false }: { parent?: boolean }) {
           <Icon name="user" size={18} /> Đổi hồ sơ
         </Link>
       </div>
+      <section className="panel attention-panel">
+        <div className="small-heading">
+          <h3>Ba mẹ cùng bé xem lại</h3>
+          <button className="text-button" onClick={attention.reload}>
+            Làm mới
+          </button>
+        </div>
+        {attention.loading ? (
+          <Loading />
+        ) : attention.error ? (
+          <ErrorPanel message={attention.error} onRetry={attention.reload} />
+        ) : attention.data?.length ? (
+          <>
+            <p className="assessment-note">
+              Đây là các dấu hiệu hệ thống ghi nhận, có thể do máy đọc chưa rõ.
+              Ba mẹ đối chiếu bài thật trước khi nhắc bé.
+            </p>
+            <div className="attention-list">
+              {attention.data.map((a) => (
+                <article key={a.code}>
+                  <strong>
+                    {a.nameVi} · {a.occurrences} bài
+                  </strong>
+                  <p>{a.feedback}</p>
+                </article>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="assessment-note">
+            Chưa có thông báo cần xem lại trong hồ sơ này.
+          </p>
+        )}
+      </section>
       {overview.loading ? (
         <Loading message="Đang tải hành trình của bé..." />
       ) : overview.error ? (
@@ -130,8 +167,8 @@ export function JourneyPage({ parent = false }: { parent?: boolean }) {
                 con tự tin hơn rất nhiều.
               </p>
               <span>
-                Điểm và nhận xét sẽ xuất hiện khi phần luyện viết và đánh giá
-                được mở.
+                Chọn bài viết bên dưới để xem nhận dạng, mẫu nét và các điểm cần
+                ba mẹ cùng bé kiểm tra.
               </span>
             </section>
           </div>
@@ -145,6 +182,7 @@ export function JourneyPage({ parent = false }: { parent?: boolean }) {
             onClick={() => {
               history.reload()
               overview.reload()
+              attention.reload()
             }}
           >
             Làm mới
@@ -165,6 +203,7 @@ export function JourneyPage({ parent = false }: { parent?: boolean }) {
                     <th>Cách luyện</th>
                     <th>Ngày viết</th>
                     <th>Điểm</th>
+                    <th>Chi tiết / phản hồi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -178,6 +217,14 @@ export function JourneyPage({ parent = false }: { parent?: boolean }) {
                       </td>
                       <td>{new Date(row.createdAt).toLocaleString('vi-VN')}</td>
                       <td>{row.totalScore ?? 'Chưa có đánh giá'}</td>
+                      <td>
+                        <Link
+                          to={`/bai-viet/${row.id}`}
+                          className="soft-button"
+                        >
+                          Xem bài viết
+                        </Link>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

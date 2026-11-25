@@ -1,0 +1,22 @@
+{
+  "status": "running",
+  "completed_epochs": 13,
+  "total_epochs": 160,
+  "n_train": 66991,
+  "n_val": 18639,
+  "pid": 10584,
+  "current_epoch": 14,
+  "stage": "train",
+  "best_val_cer": 0.063177474183824,
+  "last_metrics": {
+    "epoch": 13,
+    "loss": 0.6110511949925005,
+    "train_cer": 0.03151010701545779,
+    "val_loss": 0.9686562454082006,
+    "val_cer": 0.063177474183824,
+    "val_wer": 0.16266967111969527,
+    "lr": 0.0005000000237487257,
+    "sec": 948
+  },
+  "updated_at": "2026-11-09T16:42:58.222141+00:00"
+}

@@ -1,0 +1,21 @@
+{
+  "args": {
+    "run_name": "baseline_stable",
+    "processed_dir": "D:\\Coding\\Python\\HandWriting\\dataset\\processed",
+    "epochs": 300,
+    "batch_size": 64,
+    "seq_len": 128,
+    "lr": 0.0003,
+    "dropout": 0.35,
+    "weight_decay": 0.0001,
+    "patience": 40,
+    "lr_patience": 10,
+    "threads": 6,
+    "init_from": "baseline",
+    "resume": true
+  },
+  "architecture": "char_cnn_bigru_shape_v2",
+  "tensorflow": "2.21.0",
+  "data_sha256": "60de049f49cc35b8f028d5869041eb1692fbfc536aad0e04341a9b08c373287e",
+  "writer_overlap": 1
+}

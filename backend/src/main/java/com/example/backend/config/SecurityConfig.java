@@ -30,6 +30,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/system/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/submissions").hasRole("PARENT")
+                        .requestMatchers(HttpMethod.POST, "/api/recognition/preview").hasRole("PARENT")
                         .requestMatchers("/api/students/**").hasRole("PARENT")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().denyAll())

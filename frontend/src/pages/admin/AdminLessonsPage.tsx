@@ -151,13 +151,15 @@ export function AdminLessonsPage() {
       {deleting && (
         <DeleteDialog
           title={`Xóa bài học “${deleting.title}”?`}
-          description="Chỉ xóa được bài học không còn nội dung. Nếu bài còn chữ hoặc số, hãy chuyển chúng sang bài khác hoặc xóa nội dung chưa có lịch sử trước."
+          description={`Xóa vĩnh viễn bài học này cùng ${deleting.items.length} nội dung trong bài. Tất cả bài viết, kết quả nhận dạng, lỗi và tiến độ của các bé liên quan đến bài học cũng sẽ bị xóa. Không thể hoàn tác thao tác này.`}
           url={`/admin/lessons/${deleting.id}`}
           onClose={() => setDeleting(null)}
           onDeleted={() => {
             setDeleting(null)
             lessons.reload()
-            setNotice('Đã xóa bài học.')
+            setNotice(
+              'Đã xóa bài học, nội dung và toàn bộ lịch sử, lỗi, tiến độ liên quan.',
+            )
           }}
         />
       )}

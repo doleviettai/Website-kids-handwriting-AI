@@ -1,0 +1,22 @@
+{
+  "completed_epochs": 85,
+  "best_acc": 0.9568527918781726,
+  "best_loss": 0.13541673123836517,
+  "bad_epochs": 40,
+  "plateau": 0,
+  "best_epoch": 45,
+  "status": "early_stopped",
+  "pid": 13224,
+  "total_epochs": 300,
+  "current_epoch": 85,
+  "stage": "finished",
+  "last_metrics": {
+    "epoch": 85,
+    "loss": 0.060733720660209656,
+    "val_loss": 0.14318566024303436,
+    "train_full_acc": 0.9829571625978811,
+    "val_full_acc": 0.9467005076142132,
+    "lr": 9.375000445288606e-06,
+    "sec": 13.3
+  }
+}

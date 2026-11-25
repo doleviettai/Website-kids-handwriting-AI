@@ -1,0 +1,8 @@
+{
+  "completed_epochs": 85,
+  "best_acc": 0.9568527918781726,
+  "best_loss": 0.13541673123836517,
+  "bad_epochs": 40,
+  "plateau": 0,
+  "best_epoch": 45
+}

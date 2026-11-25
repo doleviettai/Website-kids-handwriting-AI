@@ -38,4 +38,11 @@ app:
       email: ${ADMIN_EMAIL:admin@netxinh.local}
       password: ${ADMIN_PASSWORD:admin123}
   ai:
-    enabled: false
+    enabled: true
+    base-url: ${AI_BASE_URL:http://127.0.0.1:8000}
+  scoring:
+    shape: 0.3
+    similarity: 0.3
+    direction: 0.2
+    stroke-order: 0.2
+    positive-feedback: Bé đã hoàn thành bài viết! Mình cùng xem kết quả và tiếp tục luyện tập nhé.

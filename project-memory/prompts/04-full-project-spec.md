@@ -4,6 +4,10 @@ Nguồn: mô tả người dùng gửi ngày 22/11/2026. Nội dung gốc đư�
 
 ## Điều chỉnh có hiệu lực từ yêu cầu mới nhất
 
+**Cập nhật 25/11/2026:** ADMIN xóa bài học thì xóa vĩnh viễn nội dung, bài viết/kết quả, lỗi và tiến độ liên quan; người dùng đã yêu cầu xóa thật bài1 “Những nét bút đầu tiên”. Không áp dụng điều kiện “bài phải trống” cũ; thực hiện transaction theo lesson_id, giữ dữ liệu bài khác và hồ sơ bé. Xóa riêng item/error_type vẫn giữ ràng buộc. Đọc STATUS.md để biết trạng thái thao tác thật.
+
+**Cập nhật 24/11/2026:** người dùng đã đưa model và yêu cầu nối FastAPI/canvas/nhận dạng/kết quả/lỗi/tiến độ, báo trong web cho ADMIN/PARENT. Yêu cầu này thay thế phần hoãn model ở các gạch đầu dòng cũ phía dưới. Đã chỉ định source train `D:/Coding/Python/HandWriting`; dùng đúng pipeline/nhãn, không mock. Model word thực tế theo từ nên câu/đoạn được gửi từng từ; CAMERA chưa hỗ trợ bởi ba model online này. Đọc PROJECT_CONTEXT.md và STATUS.md hiện tại.
+
 - Bước 1 (database, Flyway, seed, entity/repository) đã hoàn thành. Yêu cầu tiếp theo của người dùng là sửa frontend; đã cho phép nối các màn auth/hồ sơ/bài học/tiến độ cùng API cần thiết. Đọc STATUS.md trước khi tiếp tục, không dùng điểm dừng bước 1 cũ để bỏ dở yêu cầu mới.
 - Chưa làm nhận dạng/chấm chữ đơn, chữ ghép, đoạn văn; chưa gọi model hoặc service Python. Mô tả MockAiClient phía dưới là phương án tương lai, chưa áp dụng ở bước 1.
 - Repo thực tế dùng Gradle + Spring Boot + Java 21; giữ Gradle, không chuyển sang Maven.

@@ -27,6 +27,6 @@ public class DatabaseHealthService {
                 jdbcTemplate.queryForObject("SELECT DATABASE()", String.class),
                 jdbcTemplate.queryForObject("SELECT VERSION()", String.class),
                 Arrays.stream(flyway.info().applied()).map(migration -> migration.getVersion().getVersion()).toList(),
-                counts, false);
+                counts, true);
     }
 }

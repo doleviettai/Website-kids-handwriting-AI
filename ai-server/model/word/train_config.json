@@ -1,0 +1,38 @@
+{
+  "args": {
+    "level": "word",
+    "data_name": "word_v2",
+    "run_name": "word_stable",
+    "epochs": 160,
+    "batch_size": 0,
+    "lr": 0.0005,
+    "units": 128,
+    "dropout": 0.3,
+    "weight_decay": 0.0001,
+    "patience": 20,
+    "lr_patience": 5,
+    "min_delta": 0.0001,
+    "no_augment": false,
+    "max_train": 0,
+    "max_val": 0,
+    "train_eval_samples": 1000,
+    "init_from": "thu",
+    "resume": false,
+    "threads": 6
+  },
+  "n_train": 66991,
+  "n_val": 18639,
+  "batch_size": 64,
+  "dataset_signature": {
+    "samples.csv": "ed047e509567f59f9a928aa13a1d1e97f2004ff322cfbddee8a0343e2c6a667e",
+    "meta.json": "52783f974e805dede629d54dae56d210818adcacf8869acbbe19b60a506a0d9d",
+    "data.npz": {
+      "size": 110710144,
+      "mtime_ns": 1794220724636115400
+    }
+  },
+  "architecture": "masked_cnn_bigru_ctc_v2",
+  "tensorflow": "2.21.0",
+  "best_val_cer": 0.063177474183824,
+  "completed_epochs": 13
+}

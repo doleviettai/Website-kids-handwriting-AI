@@ -6,6 +6,7 @@ Thư mục này lưu ngữ cảnh trong repo để tiếp tục đồ án qua c�
 | --- | --- |
 | [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | Mô tả đồ án, kiến trúc, yêu cầu và quy tắc nghiệp vụ |
 | [STATUS.md](STATUS.md) | Đã làm, chưa làm, kiểm tra và việc cần tiếp tục |
+| [MODEL_REVIEW.md](MODEL_REVIEW.md) | Kiểm tra ba run đang dùng, hash checkpoint, cấu hình và giới hạn báo cáo đánh giá |
 | [database.dbml](database.dbml) | Schema MySQL gốc gồm 9 bảng, lưu ở định dạng DBML |
 | [prompts/README.md](prompts/README.md) | Cách dùng và danh sách prompt |
 | [prompts/01-resume-project.md](prompts/01-resume-project.md) | Đọc lại ngữ cảnh trước khi tiếp tục |

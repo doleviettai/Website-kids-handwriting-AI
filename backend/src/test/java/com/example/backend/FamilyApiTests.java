@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.backend.entity.User;
 import com.example.backend.entity.enums.UserRole;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.LessonRepository;
+import com.example.backend.repository.WritingItemRepository;
 import com.example.backend.service.JwtService;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +30,8 @@ class FamilyApiTests {
     @Autowired WebApplicationContext context;
     @Autowired ObjectMapper json;
     @Autowired UserRepository users;
+    @Autowired LessonRepository lessons;
+    @Autowired WritingItemRepository items;
     @Autowired JwtService tokens;
     MockMvc mvc;
 
@@ -85,14 +89,14 @@ class FamilyApiTests {
         String body = mvc.perform(get("/api/lessons").header("Authorization", bearer(parent)))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         var rows = json.readTree(body);
-        assertThat(rows.size()).isEqualTo(6);
+        assertThat((long) rows.size()).isEqualTo(lessons.count());
         int total = 0;
         for (var row : rows) total += row.get("items").size();
-        assertThat(total).isEqualTo(58);
+        assertThat((long) total).isEqualTo(items.findAll().stream().filter(item -> item.getLesson() != null).count());
         mvc.perform(get("/api/admin/overview").header("Authorization", bearer(parent))).andExpect(status().isForbidden());
         User admin = users.findAll().stream().filter(u -> u.getRole() == UserRole.ADMIN).findFirst().orElseThrow();
         String adminToken = tokens.issue(admin);
-        mvc.perform(get("/api/admin/overview").header("Authorization", bearer(adminToken))).andExpect(status().isOk()).andExpect(jsonPath("$.lessons").value(6));
+        mvc.perform(get("/api/admin/overview").header("Authorization", bearer(adminToken))).andExpect(status().isOk()).andExpect(jsonPath("$.lessons").value(lessons.count()));
         mvc.perform(get("/api/admin/users").header("Authorization", bearer(adminToken))).andExpect(status().isOk()).andExpect(jsonPath("$.content[0].passwordHash").doesNotExist());
     }
 

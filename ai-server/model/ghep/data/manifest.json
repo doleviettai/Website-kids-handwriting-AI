@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "source_sha256": "0feaa137c228cf71582a0d2266d4a60fba830b1b63333df46f51f1c7b8f2f7dc",
+  "files": {
+    "train.pkl": "7fb6c3e5bfb58e972a883fe8df74f2654e7ef7da70371576c6bcfe78f606c339",
+    "validation.pkl": "c01277176c3f8544e3ab62242bca9715d61ba1d7b2716fd860a930b47f4c2b7d",
+    "test.pkl": "a24ec6c1e0f02b27b29bdad7a3b71baa963fb39aad8a2d92f795709b45941278",
+    "label_map.json": "409b2e46cf9f02dc474f4f082ef2e5ff7fb7643840f9eb40bb5ccb2b0caf2bb4",
+    "data_report.json": "b0bb9272a179496bb0460e9bbfa713ef4969f79881aafc47d1aaeb764bb74729"
+  }
+}

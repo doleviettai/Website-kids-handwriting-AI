@@ -1,0 +1,31 @@
+{
+  "epoch": 84,
+  "best_score": 0.8967169416607619,
+  "best_val_loss": 0.4932859241962433,
+  "best_val_acc": 0.8637951105937136,
+  "best_epoch": 84,
+  "bad_epochs": 0,
+  "plateau": 0,
+  "status": "running",
+  "pid": 37276,
+  "total_epochs": 100,
+  "current_epoch": 85,
+  "stage": "deep_train",
+  "last_metrics": {
+    "epoch": 84,
+    "loss": 1.0566421747207642,
+    "val_loss": 0.4932859241962433,
+    "train_accuracy": 0.962,
+    "val_accuracy": 0.8637951105937136,
+    "val_source_score": 0.8967169416607619,
+    "by_source": {
+      "composed": 0.7972972972972973,
+      "human": 0.9063670411985019,
+      "synthetic": 0.9864864864864865
+    },
+    "pair_correct": 7,
+    "pair_n": 8,
+    "lr": 6.24999984211172e-06,
+    "sec": 35.5
+  }
+}

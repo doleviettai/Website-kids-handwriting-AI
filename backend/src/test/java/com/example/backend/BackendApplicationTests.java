@@ -47,33 +47,39 @@ class BackendApplicationTests {
     @Test
     void migrationsSeedVietnameseContentAndBCryptAdminWithoutRunningModels() {
         assertThat(flyway.info().pending()).isEmpty();
-        assertThat(flyway.info().applied()).hasSize(2);
-        assertThat(lessons.count()).isEqualTo(6);
-        assertThat(items.count()).isEqualTo(58);
-        assertThat(items.countByItemType(ItemType.LETTER)).isEqualTo(29);
-        assertThat(items.countByItemType(ItemType.DIGIT)).isEqualTo(10);
-        assertThat(errors.count()).isEqualTo(6);
+        assertThat(flyway.info().applied()).hasSize(3);
+        // Lessons and items are editable, including deletion with their history.
+        // The health endpoint must reflect current data, not the original seed counts.
+        assertThat(health.check().learningContent().get("lessons")).isEqualTo(lessons.count());
+        assertThat(health.check().learningContent().get("writingItems")).isEqualTo(items.count());
+        assertThat(errors.count()).isEqualTo(11);
         assertThat(models.count()).isEqualTo(3);
         for (ModelTask task : ModelTask.values()) {
             assertThat(models.findByTaskAndIsActiveTrueOrderByIdAsc(task)).hasSize(1);
         }
-        assertThat(models.findAll()).allMatch(model -> model.getModelPath() == null);
+        assertThat(models.findAll()).allMatch(model -> model.getModelPath() != null);
         User admin = users.findByEmail(environment.getRequiredProperty("app.bootstrap.admin.email")).orElseThrow();
         assertThat(admin.getRole()).isEqualTo(UserRole.ADMIN);
         assertThat(encoder.matches(environment.getRequiredProperty("app.bootstrap.admin.password"), admin.getPasswordHash())).isTrue();
         assertThat(health.check().status()).isEqualTo("UP");
         assertThat(health.check().database()).isEqualTo("kids_handwriting");
-        assertThat(health.check().aiEnabled()).isFalse();
+        assertThat(health.check().aiEnabled()).isTrue();
     }
 
     @Test
     void accentSensitiveUniqueIndexKeepsVietnameseLettersDistinct() {
         var ids = List.of("a", "ă", "â", "o", "ô", "ơ").stream()
-                .map(text -> items.findByItemTypeAndTextValue(ItemType.LETTER, text).orElseThrow().getId()).toList();
+                .map(text -> testItem(ItemType.LETTER, text).getId()).toList();
         assertThat(ids).doesNotHaveDuplicates();
-        var template = items.findByItemTypeAndTextValue(ItemType.DIGIT, "0").orElseThrow().getTemplateJson();
+        // Exercise JSON mapping with a rollback-only fixture rather than assuming
+        // the administrator has kept an original seed item/template unchanged.
+        var example = testItem(ItemType.WORD, "Mẫu kiểm thử " + UUID.randomUUID());
+        example.setTemplateJson(new WritingTemplate(900,420,List.of(List.of(new StrokePoint(10,20,null)))));
+        Long exampleId = items.saveAndFlush(example).getId();
+        entityManager.clear();
+        var template = items.findById(exampleId).orElseThrow().getTemplateJson();
         assertThat(template.width()).isEqualTo(900);
-        assertThat(template.strokes().getFirst()).hasSize(11);
+        assertThat(template.strokes().getFirst()).hasSize(1);
     }
 
     @Test
@@ -92,6 +98,7 @@ class BackendApplicationTests {
 
     @Test
     void duplicateItemTypeAndTextIsRejectedByMySql() {
+        testItem(ItemType.LETTER, "ă");
         WritingItem duplicate = new WritingItem();
         duplicate.setItemType(ItemType.LETTER);
         duplicate.setTextValue("ă");
@@ -103,7 +110,7 @@ class BackendApplicationTests {
         User parent = parent();
         User other = parent();
         Student child = child(parent);
-        WritingItem item = items.findByItemTypeAndTextValue(ItemType.LETTER, "a").orElseThrow();
+        WritingItem item = testItem(ItemType.LETTER, "a");
         Submission submission = new Submission();
         submission.setStudent(child);
         submission.setItem(item);
@@ -131,7 +138,7 @@ class BackendApplicationTests {
     @Test
     void compositeProgressKeyCanBePersistedAndRead() {
         Student child = child(parent());
-        WritingItem item = items.findByItemTypeAndTextValue(ItemType.DIGIT, "1").orElseThrow();
+        WritingItem item = testItem(ItemType.DIGIT, "1");
         StudentProgress record = new StudentProgress();
         record.setStudent(child);
         record.setItem(item);
@@ -151,12 +158,19 @@ class BackendApplicationTests {
     void cameraSubmissionCannotPersistDirectionOrStrokeOrderScore() {
         Submission submission = new Submission();
         submission.setStudent(child(parent()));
-        submission.setItem(items.findByItemTypeAndTextValue(ItemType.LETTER, "o").orElseThrow());
+        submission.setItem(testItem(ItemType.LETTER, "o"));
         submission.setSource(SubmissionSource.CAMERA);
         submission.setDirectionScore((byte) 90);
         assertThatThrownBy(() -> submissions.saveAndFlush(submission))
                 .hasRootCauseInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("CAMERA");
+    }
+
+    private WritingItem testItem(ItemType type, String text) {
+        return items.findByItemTypeAndTextValue(type,text).orElseGet(() -> {
+            WritingItem fixture = new WritingItem(); fixture.setItemType(type); fixture.setTextValue(text);
+            return items.saveAndFlush(fixture);
+        });
     }
 
     private User parent() {

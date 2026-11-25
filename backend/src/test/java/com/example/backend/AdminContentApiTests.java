@@ -9,6 +9,7 @@ import com.example.backend.entity.User;
 import com.example.backend.entity.enums.UserRole;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.JwtService;
+import com.example.backend.service.AdminContentService;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ class AdminContentApiTests {
     @Autowired UserRepository users;
     @Autowired JwtService tokens;
     @Autowired JdbcTemplate jdbc;
+    @Autowired AdminContentService content;
     MockMvc mvc;
     String admin;
 
@@ -37,7 +39,7 @@ class AdminContentApiTests {
         admin = "Bearer " + tokens.issue(users.findAll().stream().filter(u -> u.getRole() == UserRole.ADMIN).findFirst().orElseThrow());
     }
 
-    @Test void lessonAndItemCrudPersistsTemplateAndNfcAndPreventsNonEmptyLessonDeletion() throws Exception {
+    @Test void lessonAndItemCrudPersistsTemplateAndNfc() throws Exception {
         long lessonId = createLesson();
         var template = Map.of("width", 900, "height", 420, "strokes", List.of(List.of(Map.of("x", 20, "y", 40, "t", 1), Map.of("x", 30, "y", 50, "t", 2))));
         var item = item(lessonId, "WORD", "Từ thử " + UUID.randomUUID(), template);
@@ -48,7 +50,6 @@ class AdminContentApiTests {
         assertThat(saved.get("textValue").asString()).startsWith("Từ thử");
         mvc.perform(get("/api/lessons/" + lessonId).header("Authorization", admin)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.items[0].template.width").value(900));
-        mvc.perform(delete("/api/admin/lessons/" + lessonId).header("Authorization", admin)).andExpect(status().isConflict());
         mvc.perform(put("/api/admin/lessons/" + lessonId).header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(Map.of("title", "Bài đã sửa", "gradeLevel", "LOP_1", "sortOrder", 7))))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.title").value("Bài đã sửa"));
@@ -77,6 +78,66 @@ class AdminContentApiTests {
         mvc.perform(post("/api/admin/lessons").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(Map.of("title", " ", "gradeLevel", "MAU_GIAO", "sortOrder", -1))))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test void deletingLessonRemovesAllDependentHistoryAndPreservesOtherLessonsAndProfiles() throws Exception {
+        long targetLesson = createLesson();
+        long otherLesson = createLesson();
+        long targetItem = createWordItem(targetLesson);
+        long unusedItem = createWordItem(targetLesson);
+        long otherItem = createWordItem(otherLesson);
+        User parent = new User();
+        parent.setEmail("cascade-" + UUID.randomUUID() + "@example.test"); parent.setPasswordHash("test-only");
+        users.saveAndFlush(parent);
+        jdbc.update("INSERT INTO students(parent_id,nickname,grade_level) VALUES (?, 'Bé thử xóa', 'MAU_GIAO')", parent.getId());
+        long student = jdbc.queryForObject("SELECT id FROM students WHERE parent_id=?", Long.class, parent.getId());
+        int errorType = jdbc.queryForObject("SELECT id FROM error_types WHERE code='TOO_SMALL'", Integer.class);
+        jdbc.update("INSERT INTO submissions(student_id,item_id,source) VALUES (?,?,'TOUCH'),(?,?,'TOUCH'),(?,?,'TOUCH')",
+                student, targetItem, student, targetItem, student, otherItem);
+        jdbc.update("INSERT INTO submission_errors(submission_id,error_type_id) SELECT id,? FROM submissions WHERE student_id=?", errorType, student);
+        jdbc.update("INSERT INTO student_progress(student_id,item_id,attempts,best_score) VALUES (?,?,2,75),(?,?,1,85)", student,targetItem,student,otherItem);
+        String parentAuth = "Bearer " + tokens.issue(parent);
+        mvc.perform(delete("/api/admin/lessons/" + targetLesson).header("Authorization", parentAuth)).andExpect(status().isForbidden());
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM submissions WHERE item_id=?", Long.class,targetItem)).isEqualTo(2);
+        // The service must use the same database transaction for every delete.
+        // Rolling that transaction back restores the entire populated lesson.
+        jdbc.execute((org.springframework.jdbc.core.ConnectionCallback<Void>) connection -> {
+            var savepoint = connection.setSavepoint();
+            content.deleteLesson(targetLesson);
+            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM lessons WHERE id=?", Long.class,targetLesson)).isZero();
+            connection.rollback(savepoint);
+            connection.releaseSavepoint(savepoint);
+            return null;
+        });
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM lessons WHERE id=?", Long.class,targetLesson)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM writing_items WHERE lesson_id=?", Long.class,targetLesson)).isEqualTo(2);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM submissions WHERE item_id=?", Long.class,targetItem)).isEqualTo(2);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM student_progress WHERE item_id=?", Long.class,targetItem)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM submission_errors se JOIN submissions s ON s.id=se.submission_id WHERE s.item_id=?", Long.class,targetItem)).isEqualTo(2);
+        mvc.perform(delete("/api/admin/lessons/" + targetLesson).header("Authorization", admin)).andExpect(status().isNoContent());
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM lessons WHERE id=?", Long.class,targetLesson)).isZero();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM writing_items WHERE id IN (?,?)", Long.class,targetItem,unusedItem)).isZero();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM submissions WHERE item_id=?", Long.class,targetItem)).isZero();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM student_progress WHERE item_id=?", Long.class,targetItem)).isZero();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM submission_errors se JOIN submissions s ON s.id=se.submission_id WHERE s.student_id=?", Long.class,student)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM lessons WHERE id=?", Long.class,otherLesson)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM writing_items WHERE id=?", Long.class,otherItem)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM submissions WHERE item_id=?", Long.class,otherItem)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT attempts FROM student_progress WHERE student_id=? AND item_id=?", Integer.class,student,otherItem)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM students WHERE id=?", Long.class,student)).isEqualTo(1);
+        assertThat(users.findById(parent.getId())).isPresent();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM error_types WHERE id=?", Long.class,errorType)).isEqualTo(1);
+        mvc.perform(get("/api/lessons/" + targetLesson).header("Authorization", admin)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/students/" + student + "/overview").header("Authorization",parentAuth)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.submissions").value(1)).andExpect(jsonPath("$.practicedItems").value(1));
+        mvc.perform(delete("/api/admin/lessons/" + targetLesson).header("Authorization", admin)).andExpect(status().isNotFound());
+    }
+
+    private long createWordItem(long lessonId) throws Exception {
+        String body = mvc.perform(post("/api/admin/items").header("Authorization",admin).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(item(lessonId,"WORD","Từ thử " + UUID.randomUUID(),null))))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        return json.readTree(body).get("id").asLong();
     }
 
     @Test void errorCrudValidatesCodesAndDuplicateCodes() throws Exception {

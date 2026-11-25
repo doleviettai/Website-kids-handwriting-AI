@@ -1,0 +1,37 @@
+{
+  "selected_alpha": 0.0,
+  "candidates": [
+    {
+      "alpha": 0.0,
+      "correct": 377,
+      "n": 394,
+      "ad_correct": 4,
+      "ad_n": 4
+    },
+    {
+      "alpha": 0.15,
+      "correct": 375,
+      "n": 394,
+      "ad_correct": 4,
+      "ad_n": 4
+    },
+    {
+      "alpha": 0.3,
+      "correct": 376,
+      "n": 394,
+      "ad_correct": 4,
+      "ad_n": 4
+    },
+    {
+      "alpha": 0.5,
+      "correct": 375,
+      "n": 394,
+      "ad_correct": 4,
+      "ad_n": 4
+    }
+  ],
+  "policy": "improve val full-char accuracy without reducing a/d accuracy; else alpha=0",
+  "trained_on": "train",
+  "selected_on": "val",
+  "test_used": false
+}

@@ -1,0 +1,656 @@
+{
+  "num_files": 5639,
+  "num_classes": 148,
+  "per_split": {
+    "train": 4150,
+    "validation": 859,
+    "test": 630
+  },
+  "by_source": {
+    "train": {
+      "synthetic": 1036,
+      "human": 746,
+      "composed": 2368
+    },
+    "validation": {
+      "synthetic": 148,
+      "human": 267,
+      "composed": 444
+    },
+    "test": {
+      "synthetic": 296,
+      "human": 334
+    }
+  },
+  "pair_counts": {
+    "train": {
+      "iê": 23,
+      "uê": 23
+    },
+    "validation": {
+      "iê": 4,
+      "uê": 4
+    },
+    "test": {
+      "iê": 2,
+      "uê": 2
+    }
+  },
+  "per_class_source": {
+    "ac": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ach": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ai": {
+      "synthetic": 7,
+      "human": 51,
+      "composed": 16
+    },
+    "am": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "an": {
+      "synthetic": 7,
+      "human": 73,
+      "composed": 16
+    },
+    "ang": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "anh": {
+      "synthetic": 7,
+      "human": 193,
+      "composed": 16
+    },
+    "ao": {
+      "synthetic": 7,
+      "human": 1,
+      "composed": 16
+    },
+    "ap": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "at": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "au": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ay": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ch": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ec": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ech": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "em": {
+      "synthetic": 7,
+      "human": 53,
+      "composed": 16
+    },
+    "en": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "eng": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "enh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "eo": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ep": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "et": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "gh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "gi": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ia": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ich": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "im": {
+      "synthetic": 7,
+      "human": 6,
+      "composed": 16
+    },
+    "in": {
+      "synthetic": 7,
+      "human": 20,
+      "composed": 16
+    },
+    "inh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ip": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "it": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iu": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iê": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iêc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iêm": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iên": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iêng": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iêp": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iêt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "iêu": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "kh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ng": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ngh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "nh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oa": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oac": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oach": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oai": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oam": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oan": {
+      "synthetic": 7,
+      "human": 2,
+      "composed": 16
+    },
+    "oang": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oanh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oat": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oay": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oe": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oen": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oet": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oi": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "om": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "on": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ong": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "op": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ot": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oăc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oăn": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oăng": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "oăt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ph": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "qu": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "th": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "tr": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ua": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ui": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "um": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "un": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ung": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "up": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ut": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uy": {
+      "synthetic": 7,
+      "human": 1,
+      "composed": 16
+    },
+    "uya": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uych": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uynh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uyt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uyên": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uyêt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uân": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uât": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uây": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uê": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uô": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uôc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uôi": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uôm": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uôn": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uông": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "uôt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "yê": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "yêu": {
+      "synthetic": 7,
+      "human": 38,
+      "composed": 16
+    },
+    "âc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "âm": {
+      "synthetic": 7,
+      "human": 15,
+      "composed": 16
+    },
+    "ân": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "âng": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "âp": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ât": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "âu": {
+      "synthetic": 7,
+      "human": 2,
+      "composed": 16
+    },
+    "ây": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "êch": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "êm": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ên": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ênh": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "êp": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "êt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "êu": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ôc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ôi": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ôm": {
+      "synthetic": 7,
+      "human": 16,
+      "composed": 16
+    },
+    "ôn": {
+      "synthetic": 7,
+      "human": 1,
+      "composed": 16
+    },
+    "ông": {
+      "synthetic": 7,
+      "human": 160,
+      "composed": 16
+    },
+    "ôp": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ôt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ăc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ăm": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ăn": {
+      "synthetic": 7,
+      "human": 68,
+      "composed": 16
+    },
+    "ăng": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ăp": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ăt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ơi": {
+      "synthetic": 7,
+      "human": 6,
+      "composed": 16
+    },
+    "ơm": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ơn": {
+      "synthetic": 7,
+      "human": 13,
+      "composed": 16
+    },
+    "ơp": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ơt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ưa": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ưc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ưi": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ưng": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ưt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ưu": {
+      "synthetic": 7,
+      "human": 17,
+      "composed": 16
+    },
+    "ươ": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ươc": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ươi": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ươm": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ươn": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ương": {
+      "synthetic": 7,
+      "human": 10,
+      "composed": 16
+    },
+    "ươp": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ươt": {
+      "synthetic": 7,
+      "composed": 16
+    },
+    "ươu": {
+      "synthetic": 7,
+      "composed": 16
+    }
+  },
+  "composed_note": "Chỉ ghép glyph thuộc tập train chữ đơn; dữ liệu phái sinh, không phải mẫu chữ ghép người thật.",
+  "glyph_validation_note": "Nếu có composed validation: glyph lấy từ val chữ đơn, không trùng glyph train; cùng người viết, không phải kiểm chứng người mới.",
+  "note": "Synthetic và human được báo cáo riêng; chưa kiểm chứng trên chữ của bé."
+}

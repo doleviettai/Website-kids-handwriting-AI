@@ -88,3 +88,87 @@ export type AdminOverview = {
   lessons: number
   averageScore: number | null
 }
+export type AiStatus = {
+  status: string
+  message?: string
+  cameraSupported?: boolean
+  paragraphMode?: string
+  models: Record<
+    string,
+    { ready: boolean; modelPath: string; version: string; message: string }
+  >
+}
+export type Finding = {
+  code: string
+  nameVi: string
+  feedback: string
+  segmentIndex: number | null
+  strokeIndex: number | null
+}
+export type SubmissionDetail = {
+  task?: 'SINGLE_CHAR' | 'COMPOUND' | 'PARAGRAPH'
+  id: number
+  studentId: number
+  nickname: string
+  itemId: number
+  lessonId: number | null
+  expectedText: string
+  predictedText: string
+  source: 'TOUCH' | 'CAMERA'
+  modelName: string | null
+  modelVersion: string | null
+  confidence: number
+  textAccuracy: number
+  correct: boolean
+  shapeScore: number | null
+  similarityScore: number | null
+  directionScore: number | null
+  strokeOrderScore: number | null
+  totalScore: number
+  stars: number
+  feedbackText: string
+  assessmentMethod: string
+  strokes: Stroke[]
+  segments: {
+    index: number
+    expected: string
+    predicted: string
+    confidence: number | null
+    score: number
+    strokeStart: number | null
+    strokeEnd: number | null
+  }[]
+  errors: Finding[]
+  createdAt: string
+}
+export type Attention = {
+  code: string
+  nameVi: string
+  feedback: string
+  occurrences: number
+}
+export type ReviewPage = {
+  content: {
+    id: number
+    studentId: number
+    nickname: string
+    expectedText: string
+    predictedText: string
+    totalScore: number | null
+    confidence: number | null
+    createdAt: string
+    errors: number
+  }[]
+  page: number
+  totalPages: number
+  totalElements: number
+}
+export type Recognition = {
+  text: string
+  confidence: number
+  uncertain: boolean
+  candidates: { text: string; confidence: number | null }[]
+  chars: { text: string; confidence: number | null }[]
+  suggestedText: string
+  preview: string | null
+}

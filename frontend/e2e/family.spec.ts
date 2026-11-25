@@ -111,9 +111,19 @@ test('family registers, manages profiles, browses MySQL content and signs out', 
     timeout: 10000,
   })
   await page.getByRole('link', { name: 'Bài học của bé', exact: true }).click()
-  await expect(page.locator('.lesson-card')).toHaveCount(3)
+  const token = await page.evaluate(() =>
+    sessionStorage.getItem('netxinh.access-token.v2'),
+  )
+  const catalog = (await (
+    await page.request.get('/api/lessons', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  ).json()) as { title: string; gradeLevel: string; items: unknown[] }[]
+  await expect(page.locator('.lesson-card')).toHaveCount(
+    catalog.filter((lesson) => lesson.gradeLevel === 'MAU_GIAO').length,
+  )
   await page.getByLabel('Lọc theo cấp học').selectOption('ALL')
-  await expect(page.locator('.lesson-card')).toHaveCount(6)
+  await expect(page.locator('.lesson-card')).toHaveCount(catalog.length)
   await page
     .locator('.lesson-card')
     .filter({
@@ -123,7 +133,10 @@ test('family registers, manages profiles, browses MySQL content and signs out', 
   await expect(
     page.getByRole('heading', { name: 'Bảng chữ cái tiếng Việt', exact: true }),
   ).toBeVisible()
-  await expect(page.locator('.library-items button')).toHaveCount(28)
+  await expect(page.locator('.library-items button')).toHaveCount(
+    catalog.find((lesson) => lesson.title === 'Bảng chữ cái tiếng Việt')!.items
+      .length,
+  )
   await page.getByRole('button', { name: 'ă Chưa học', exact: true }).click()
   await expect(page.locator('.preview-text')).toHaveText('ă')
   await page.setViewportSize({ width: 375, height: 812 })

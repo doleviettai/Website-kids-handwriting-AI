@@ -1,0 +1,94 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794901714.394741   15264 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794901716.603791   15264 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Đã dựng dữ liệu: {'train': 4150, 'validation': 859, 'test': 630}; nguồn: {'train': {'synthetic': 1036, 'human': 746, 'composed': 2368}, 'validation': {'synthetic': 148, 'human': 267, 'composed': 444}, 'test': {'synthetic': 296, 'human': 334}}
+I0000 00:00:1794901736.079650   15264 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+Khởi tạo từ D:\Coding\Python\HandWriting\models\ghep_handwriting_v3\ghep_last.keras; học thêm nhánh hướng nét.
+Python 3.12.10; GPU=[]; train=4150 val=859 classes=148
+epoch 1/100 loss=1.7680 train=84.60% val=76.25% sources={np.str_('composed'): 0.6193693693693694, np.str_('human'): 0.8726591760299626, np.str_('synthetic'): 0.9932432432432432} uê/iê=6/8 lr=1.0e-04 40.4s
+epoch 2/100 loss=1.7516 train=84.40% val=74.74% sources={np.str_('composed'): 0.5945945945945946, np.str_('human'): 0.8651685393258427, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=1.0e-04 31.4s
+epoch 3/100 loss=1.7011 train=84.60% val=76.02% sources={np.str_('composed'): 0.6216216216216216, np.str_('human'): 0.8689138576779026, np.str_('synthetic'): 0.9797297297297297} uê/iê=6/8 lr=1.0e-04 28.0s
+epoch 4/100 loss=1.6501 train=84.80% val=76.60% sources={np.str_('composed'): 0.6261261261261262, np.str_('human'): 0.8689138576779026, np.str_('synthetic'): 1.0} uê/iê=6/8 lr=1.0e-04 27.9s
+epoch 5/100 loss=1.6653 train=86.40% val=77.88% sources={np.str_('composed'): 0.6418918918918919, np.str_('human'): 0.8838951310861424, np.str_('synthetic'): 1.0} uê/iê=7/8 lr=1.0e-04 29.0s
+epoch 6/100 loss=1.6218 train=88.00% val=78.35% sources={np.str_('composed'): 0.6441441441441441, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 1.0} uê/iê=6/8 lr=1.0e-04 27.6s
+epoch 7/100 loss=1.6138 train=87.80% val=78.93% sources={np.str_('composed'): 0.6554054054054054, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 1.0} uê/iê=6/8 lr=1.0e-04 27.8s
+epoch 8/100 loss=1.5374 train=88.20% val=79.05% sources={np.str_('composed'): 0.668918918918919, np.str_('human'): 0.8838951310861424, np.str_('synthetic'): 0.9864864864864865} uê/iê=6/8 lr=1.0e-04 31.5s
+epoch 9/100 loss=1.5035 train=87.20% val=77.53% sources={np.str_('composed'): 0.6396396396396397, np.str_('human'): 0.8801498127340824, np.str_('synthetic'): 0.9932432432432432} uê/iê=6/8 lr=1.0e-04 49.1s
+epoch 10/100 loss=1.5035 train=89.00% val=78.35% sources={np.str_('composed'): 0.6554054054054054, np.str_('human'): 0.8838951310861424, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.0e-04 34.6s
+epoch 11/100 loss=1.4809 train=88.60% val=78.70% sources={np.str_('composed'): 0.668918918918919, np.str_('human'): 0.8689138576779026, np.str_('synthetic'): 0.9932432432432432} uê/iê=6/8 lr=1.0e-04 32.0s
+epoch 12/100 loss=1.4906 train=89.60% val=79.74% sources={np.str_('composed'): 0.6779279279279279, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9864864864864865} uê/iê=6/8 lr=1.0e-04 29.0s
+epoch 13/100 loss=1.3751 train=90.20% val=79.74% sources={np.str_('composed'): 0.6846846846846847, np.str_('human'): 0.8764044943820225, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=1.0e-04 28.1s
+epoch 14/100 loss=1.4528 train=89.40% val=79.39% sources={np.str_('composed'): 0.6779279279279279, np.str_('human'): 0.8764044943820225, np.str_('synthetic'): 0.9932432432432432} uê/iê=6/8 lr=1.0e-04 28.8s
+epoch 15/100 loss=1.4577 train=89.40% val=80.09% sources={np.str_('composed'): 0.6981981981981982, np.str_('human'): 0.8689138576779026, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.0e-04 29.2s
+epoch 16/100 loss=1.4130 train=90.80% val=79.98% sources={np.str_('composed'): 0.6936936936936937, np.str_('human'): 0.8726591760299626, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.0e-04 27.7s
+epoch 17/100 loss=1.3644 train=90.60% val=79.74% sources={np.str_('composed'): 0.6869369369369369, np.str_('human'): 0.8726591760299626, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=1.0e-04 28.6s
+epoch 18/100 loss=1.3474 train=92.20% val=79.74% sources={np.str_('composed'): 0.6869369369369369, np.str_('human'): 0.8726591760299626, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=1.0e-04 28.9s
+epoch 19/100 loss=1.3158 train=92.00% val=80.21% sources={np.str_('composed'): 0.6981981981981982, np.str_('human'): 0.8726591760299626, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 30.2s
+epoch 20/100 loss=1.3556 train=93.00% val=81.96% sources={np.str_('composed'): 0.7274774774774775, np.str_('human'): 0.8801498127340824, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 28.7s
+epoch 21/100 loss=1.3199 train=92.20% val=81.61% sources={np.str_('composed'): 0.7184684684684685, np.str_('human'): 0.8838951310861424, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 28.2s
+epoch 22/100 loss=1.3937 train=92.60% val=81.37% sources={np.str_('composed'): 0.713963963963964, np.str_('human'): 0.8838951310861424, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 31.0s
+epoch 23/100 loss=1.3523 train=91.20% val=81.96% sources={np.str_('composed'): 0.7297297297297297, np.str_('human'): 0.8764044943820225, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 39.6s
+epoch 24/100 loss=1.3277 train=91.20% val=81.37% sources={np.str_('composed'): 0.7094594594594594, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 32.7s
+epoch 25/100 loss=1.3339 train=91.80% val=81.26% sources={np.str_('composed'): 0.7094594594594594, np.str_('human'): 0.8876404494382022, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 32.3s
+epoch 26/100 loss=1.3097 train=91.40% val=81.84% sources={np.str_('composed'): 0.7184684684684685, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 32.3s
+epoch 27/100 loss=1.2686 train=92.20% val=83.24% sources={np.str_('composed'): 0.7432432432432432, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 41.2s
+epoch 28/100 loss=1.2620 train=92.80% val=82.77% sources={np.str_('composed'): 0.7274774774774775, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=5.0e-05 32.9s
+epoch 29/100 loss=1.2889 train=92.60% val=82.89% sources={np.str_('composed'): 0.7319819819819819, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 33.8s
+epoch 30/100 loss=1.2951 train=92.60% val=82.54% sources={np.str_('composed'): 0.7364864864864865, np.str_('human'): 0.8838951310861424, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 30.7s
+epoch 31/100 loss=1.3169 train=93.20% val=81.84% sources={np.str_('composed'): 0.722972972972973, np.str_('human'): 0.8838951310861424, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 29.1s
+epoch 32/100 loss=1.2748 train=93.20% val=83.00% sources={np.str_('composed'): 0.7387387387387387, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 28.2s
+epoch 33/100 loss=1.2134 train=94.00% val=83.59% sources={np.str_('composed'): 0.75, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 28.8s
+epoch 34/100 loss=1.2747 train=93.60% val=82.77% sources={np.str_('composed'): 0.7319819819819819, np.str_('human'): 0.898876404494382, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 29.9s
+epoch 35/100 loss=1.2563 train=94.00% val=83.24% sources={np.str_('composed'): 0.7432432432432432, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=5.0e-05 30.0s
+epoch 36/100 loss=1.2571 train=93.80% val=83.12% sources={np.str_('composed'): 0.740990990990991, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 28.6s
+epoch 37/100 loss=1.1811 train=94.20% val=83.47% sources={np.str_('composed'): 0.7432432432432432, np.str_('human'): 0.898876404494382, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=5.0e-05 27.6s
+epoch 38/100 loss=1.2200 train=95.20% val=84.17% sources={np.str_('composed'): 0.7612612612612613, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=5.0e-05 27.9s
+epoch 39/100 loss=1.1874 train=94.20% val=84.52% sources={np.str_('composed'): 0.7680180180180181, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=5.0e-05 28.4s
+epoch 40/100 loss=1.1961 train=94.00% val=84.17% sources={np.str_('composed'): 0.7567567567567568, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 29.4s
+epoch 41/100 loss=1.2519 train=94.80% val=85.33% sources={np.str_('composed'): 0.7725225225225225, np.str_('human'): 0.9101123595505618, np.str_('synthetic'): 0.9932432432432432} uê/iê=7/8 lr=5.0e-05 35.5s
+epoch 42/100 loss=1.1837 train=93.60% val=84.17% sources={np.str_('composed'): 0.7567567567567568, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 1.0} uê/iê=7/8 lr=5.0e-05 30.9s
+epoch 43/100 loss=1.1854 train=94.00% val=84.40% sources={np.str_('composed'): 0.7680180180180181, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 29.3s
+epoch 44/100 loss=1.1196 train=95.40% val=84.40% sources={np.str_('composed'): 0.7635135135135135, np.str_('human'): 0.898876404494382, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 29.9s
+epoch 45/100 loss=1.1746 train=94.20% val=84.40% sources={np.str_('composed'): 0.7635135135135135, np.str_('human'): 0.898876404494382, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 29.5s
+epoch 46/100 loss=1.1478 train=94.20% val=84.98% sources={np.str_('composed'): 0.7725225225225225, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 30.4s
+epoch 47/100 loss=1.1282 train=94.80% val=84.40% sources={np.str_('composed'): 0.7680180180180181, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=5.0e-05 29.5s
+epoch 48/100 loss=1.1172 train=94.80% val=85.22% sources={np.str_('composed'): 0.7747747747747747, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=2.5e-05 30.1s
+epoch 49/100 loss=1.1612 train=95.00% val=84.87% sources={np.str_('composed'): 0.777027027027027, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=2.5e-05 30.0s
+epoch 50/100 loss=1.1664 train=94.80% val=84.75% sources={np.str_('composed'): 0.7725225225225225, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=2.5e-05 29.1s
+epoch 51/100 loss=1.0995 train=95.60% val=84.75% sources={np.str_('composed'): 0.7725225225225225, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=2.5e-05 28.0s
+epoch 52/100 loss=1.1355 train=95.40% val=84.87% sources={np.str_('composed'): 0.777027027027027, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=2.5e-05 27.0s
+epoch 53/100 loss=1.1079 train=95.40% val=85.68% sources={np.str_('composed'): 0.7905405405405406, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=2.5e-05 27.2s
+epoch 54/100 loss=1.1335 train=95.40% val=85.10% sources={np.str_('composed'): 0.7792792792792793, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 28.0s
+epoch 55/100 loss=1.1593 train=95.80% val=85.33% sources={np.str_('composed'): 0.7815315315315315, np.str_('human'): 0.898876404494382, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 28.9s
+epoch 56/100 loss=1.1565 train=95.80% val=85.33% sources={np.str_('composed'): 0.7792792792792793, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 31.4s
+epoch 57/100 loss=1.0656 train=95.60% val=85.45% sources={np.str_('composed'): 0.7815315315315315, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 30.5s
+epoch 58/100 loss=1.1130 train=95.20% val=85.80% sources={np.str_('composed'): 0.7882882882882883, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 27.3s
+epoch 59/100 loss=1.1642 train=95.40% val=85.91% sources={np.str_('composed'): 0.7905405405405406, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 28.6s
+epoch 60/100 loss=1.1182 train=95.40% val=85.56% sources={np.str_('composed'): 0.786036036036036, np.str_('human'): 0.898876404494382, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 30.1s
+epoch 61/100 loss=1.1326 train=95.60% val=84.87% sources={np.str_('composed'): 0.777027027027027, np.str_('human'): 0.8913857677902621, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 28.3s
+epoch 62/100 loss=1.1499 train=96.00% val=85.22% sources={np.str_('composed'): 0.7815315315315315, np.str_('human'): 0.8951310861423221, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 28.3s
+epoch 63/100 loss=1.0641 train=95.80% val=85.33% sources={np.str_('composed'): 0.7792792792792793, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 28.6s
+epoch 64/100 loss=1.0775 train=95.80% val=85.68% sources={np.str_('composed'): 0.7837837837837838, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 27.7s
+epoch 65/100 loss=1.1018 train=95.80% val=85.33% sources={np.str_('composed'): 0.7792792792792793, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=1.2e-05 29.7s
+epoch 66/100 loss=1.1015 train=95.40% val=85.80% sources={np.str_('composed'): 0.786036036036036, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 28.8s
+epoch 67/100 loss=1.1317 train=95.40% val=85.68% sources={np.str_('composed'): 0.7837837837837838, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 29.9s
+epoch 68/100 loss=1.0422 train=95.20% val=85.68% sources={np.str_('composed'): 0.7837837837837838, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 28.9s
+epoch 69/100 loss=1.1343 train=95.80% val=85.80% sources={np.str_('composed'): 0.786036036036036, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 31.9s
+epoch 70/100 loss=1.0782 train=95.80% val=85.91% sources={np.str_('composed'): 0.7905405405405406, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 33.3s
+epoch 71/100 loss=1.0885 train=95.40% val=85.22% sources={np.str_('composed'): 0.777027027027027, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 27.5s
+epoch 72/100 loss=1.0967 train=95.80% val=85.56% sources={np.str_('composed'): 0.7837837837837838, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 28.0s
+epoch 73/100 loss=1.1217 train=95.40% val=86.03% sources={np.str_('composed'): 0.7905405405405406, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 28.3s
+epoch 74/100 loss=1.0802 train=95.80% val=86.03% sources={np.str_('composed'): 0.7882882882882883, np.str_('human'): 0.9101123595505618, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 30.2s
+epoch 75/100 loss=1.0255 train=95.40% val=86.26% sources={np.str_('composed'): 0.7927927927927928, np.str_('human'): 0.9101123595505618, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 27.6s
+epoch 76/100 loss=1.0783 train=96.00% val=86.03% sources={np.str_('composed'): 0.7882882882882883, np.str_('human'): 0.9101123595505618, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 27.5s
+epoch 77/100 loss=1.0978 train=96.00% val=86.15% sources={np.str_('composed'): 0.7927927927927928, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 31.1s
+epoch 78/100 loss=1.0897 train=96.00% val=86.26% sources={np.str_('composed'): 0.7927927927927928, np.str_('human'): 0.9101123595505618, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 31.8s
+epoch 79/100 loss=1.0720 train=96.00% val=86.38% sources={np.str_('composed'): 0.7972972972972973, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 30.7s
+epoch 80/100 loss=1.0639 train=96.00% val=86.26% sources={np.str_('composed'): 0.795045045045045, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 30.6s
+epoch 81/100 loss=1.0485 train=96.00% val=86.26% sources={np.str_('composed'): 0.7972972972972973, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 31.8s
+epoch 82/100 loss=1.0873 train=96.20% val=86.38% sources={np.str_('composed'): 0.7995495495495496, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 32.4s
+epoch 83/100 loss=1.1080 train=96.20% val=86.38% sources={np.str_('composed'): 0.7995495495495496, np.str_('human'): 0.9026217228464419, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 31.8s
+epoch 84/100 loss=1.0566 train=96.20% val=86.38% sources={np.str_('composed'): 0.7972972972972973, np.str_('human'): 0.9063670411985019, np.str_('synthetic'): 0.9864864864864865} uê/iê=7/8 lr=6.2e-06 35.5s

@@ -1,0 +1,32 @@
+{
+  "pid": 17420,
+  "command": [
+    "D:\\Coding\\Python\\HandWriting\\.venv\\Scripts\\python.exe",
+    "-u",
+    "-m",
+    "src.ghep.run_full",
+    "--run-name",
+    "ghep_handwriting_v4",
+    "--epochs",
+    "100",
+    "--init-from",
+    "ghep_handwriting_v3",
+    "--init-weights",
+    "last",
+    "--composed-per-class",
+    "16",
+    "--glyph-validation-per-class",
+    "3",
+    "--samples-per-class",
+    "16",
+    "--robust-geometry",
+    "--lr",
+    "0.0001",
+    "--patience",
+    "20",
+    "--lr-patience",
+    "6",
+    "--threads",
+    "6"
+  ]
+}

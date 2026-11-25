@@ -29,7 +29,12 @@ import { AdminPage } from './pages/AdminPage'
 import { AdminLessonsPage } from './pages/admin/AdminLessonsPage'
 import { AdminItemsPage } from './pages/admin/AdminItemsPage'
 import { AdminErrorsPage } from './pages/admin/AdminErrorsPage'
+import { PracticePage } from './pages/PracticePage'
+import { SubmissionDetailPage } from './pages/SubmissionDetailPage'
+import { AdminReviewsPage } from './pages/admin/AdminReviewsPage'
 import { gradeLabels } from './data'
+import { useResource } from './hooks/useResource'
+import type { Attention, ReviewPage } from './api/types'
 import './App.css'
 import './ConnectedApp.css'
 
@@ -123,7 +128,17 @@ function NotFound() {
 function Shell() {
   const { pathname } = useLocation(),
     auth = useAuth()
-  const { students, selected, choose } = useWorkspace()
+  const { students, selected, choose, overview } = useWorkspace()
+  const notices = useResource<Attention[]>(
+    selected ? `/students/${selected.id}/attention` : null,
+    String(overview.data?.submissions ?? ''),
+  )
+  const adminNotices = useResource<ReviewPage>(
+    auth.user?.role === 'ADMIN'
+      ? '/admin/reviews?onlyErrors=true&page=0'
+      : null,
+    pathname,
+  )
   const [menuOpen, setMenuOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
@@ -182,6 +197,12 @@ function Shell() {
           end: false,
         },
         {
+          to: '/quan-tri/bai-viet',
+          icon: 'chart',
+          label: 'Bài viết & thông báo',
+          end: false,
+        },
+        {
           to: '/bai-hoc',
           icon: 'book',
           label: 'Thư viện nội dung',
@@ -191,6 +212,12 @@ function Shell() {
     : [
         { to: '/', icon: 'home', label: 'Góc học tập', end: true },
         { to: '/bai-hoc', icon: 'book', label: 'Bài học của bé', end: false },
+        {
+          to: '/luyen-tap/chu-don',
+          icon: 'pen',
+          label: 'Góc luyện viết',
+          end: false,
+        },
         { to: '/ho-so', icon: 'user', label: 'Hồ sơ các bé', end: false },
         {
           to: '/thanh-tich',
@@ -382,6 +409,19 @@ function Shell() {
             >
               <Icon name="help" size={21} />
             </button>
+            <Link
+              className="icon-button"
+              to={admin ? '/quan-tri/bai-viet' : '/phu-huynh'}
+              aria-label="Thông báo bài viết"
+              title="Điểm cần cùng bé xem lại"
+            >
+              <Icon name="bell" size={21} />
+              {(admin
+                ? (adminNotices.data?.totalElements ?? 0) > 0
+                : (notices.data?.length ?? 0) > 0) && (
+                <span className="notification-dot" />
+              )}
+            </Link>
             <span className="topbar-divider" />
             <Link
               to="/cai-dat"
@@ -421,8 +461,9 @@ function Shell() {
             </li>
           </ol>
           <p className="dialog-intro">
-            Phần luyện viết và nhận xét đang được chuẩn bị. Hiện gia đình có thể
-            quản lý hồ sơ và khám phá thư viện bài học.
+            Mở một bài học rồi chọn “Bé bắt đầu luyện viết”. Với từ/câu, bé viết
+            từng từ rồi gửi cả bài. Ba mẹ xem lịch sử và thông báo để cùng con
+            kiểm tra kết quả nhận dạng.
           </p>
           <button className="primary-button" onClick={() => setHelpOpen(false)}>
             Mình hiểu rồi, Pip ơi!
@@ -459,7 +500,31 @@ export default function App() {
             <Route path="/luyen-viet" element={<LegacyPracticeRoute />} />
             <Route
               path="/luyen-viet/:lessonId"
-              element={<LegacyPracticeRoute />}
+              element={
+                <RolePage role="PARENT">
+                  <PracticePage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/luyen-tap/:practiceKind"
+              element={
+                <RolePage role="PARENT">
+                  <PracticePage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/bai-viet/:submissionId"
+              element={<SubmissionDetailPage />}
+            />
+            <Route
+              path="/quan-tri/bai-viet"
+              element={
+                <RolePage role="ADMIN">
+                  <AdminReviewsPage />
+                </RolePage>
+              }
             />
             <Route
               path="/thanh-tich"

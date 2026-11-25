@@ -152,7 +152,11 @@ test('admin authors lessons, draws persistent templates, manages feedback and de
     .fill(changedText)
   await page.getByLabel('Độ khó', { exact: true }).selectOption('3')
   await page.setViewportSize({ width: 375, height: 812 })
-  expect(await page.getByRole('dialog').evaluate(dialog => dialog.scrollWidth <= dialog.clientWidth + 1)).toBeTruthy()
+  expect(
+    await page
+      .getByRole('dialog')
+      .evaluate((dialog) => dialog.scrollWidth <= dialog.clientWidth + 1),
+  ).toBeTruthy()
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -177,11 +181,13 @@ test('admin authors lessons, draws persistent templates, manages feedback and de
   await page
     .getByRole('button', { name: `Xóa bài học ${changedTitle}`, exact: true })
     .click()
-  await page.getByRole('button', { name: 'Xác nhận xóa', exact: true }).click()
-  await expect(page.getByRole('dialog').getByRole('alert')).toContainText(
-    'Bài học còn nội dung',
+  await expect(page.getByRole('dialog')).toContainText(
+    'Tất cả bài viết, kết quả nhận dạng, lỗi và tiến độ',
   )
   await page.getByRole('button', { name: 'Giữ lại', exact: true }).click()
+  await expect(
+    page.getByRole('heading', { name: changedTitle, exact: true }),
+  ).toBeVisible()
   await page
     .getByRole('navigation', { name: 'Điều hướng chính' })
     .getByRole('link', { name: 'Loại lỗi & phản hồi', exact: true })

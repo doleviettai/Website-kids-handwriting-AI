@@ -7,6 +7,7 @@ import { useWorkspace } from '../context/workspace-context'
 import { Icon } from '../components/Icons'
 import { LessonArt } from '../components/Artwork'
 import { ErrorPanel, Loading } from '../components/Feedback'
+import { useAuth } from '../context/auth-context'
 
 function lessonStyle(lesson: ApiLesson) {
   const type = lesson.items[0]?.itemType ?? 'LETTER'
@@ -206,6 +207,7 @@ export function LessonsPage() {
 }
 
 export function LessonDetailPage() {
+  const { user } = useAuth()
   const { lessonId } = useParams(),
     { lessons, overview } = useWorkspace()
   const lesson = lessons.data?.find((l) => l.id === Number(lessonId))
@@ -317,16 +319,15 @@ export function LessonDetailPage() {
                   )}
                 </svg>
               )}
-              <div className="model-coming">
-                <Icon name="leaf" size={23} />
-                <div>
-                  <h3>Góc luyện viết đang được chuẩn bị</h3>
-                  <p>
-                    Bé có thể làm quen nội dung bài học trước. Phần viết và nhận
-                    xét sẽ mở khi hệ thống sẵn sàng.
-                  </p>
-                </div>
-              </div>
+              {user?.role === 'PARENT' && (
+                <Link
+                  className="primary-button"
+                  to={`/luyen-viet/${lesson.id}?item=${item.id}`}
+                >
+                  Bé bắt đầu luyện viết
+                  <Icon name="pen" size={18} />
+                </Link>
+              )}
             </>
           ) : (
             <div className="empty-state">

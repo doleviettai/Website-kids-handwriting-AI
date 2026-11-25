@@ -8,6 +8,7 @@ import com.example.backend.entity.value.WritingTemplate;
 import com.example.backend.exception.ApiException;
 import com.example.backend.repository.*;
 import com.example.backend.util.VietnameseText;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class AdminContentService {
     private final ErrorTypeRepository errors;
     private final LearningService learning;
     private final JdbcTemplate jdbc;
+    private final EntityManager entityManager;
 
     public LessonResponse createLesson(LessonRequest request) { return saveLesson(new Lesson(), request); }
     public LessonResponse updateLesson(long id, LessonRequest request) { return saveLesson(lesson(id), request); }
@@ -38,11 +40,29 @@ public class AdminContentService {
     }
 
     public void deleteLesson(long id) {
-        Lesson lesson = lesson(id);
-        if (jdbc.queryForObject("SELECT COUNT(*) FROM writing_items WHERE lesson_id=?", Long.class, id) > 0)
-            throw conflict("Bài học còn nội dung. Hãy chuyển nội dung sang bài khác hoặc xóa nội dung trước khi xóa bài học.");
-        lessons.delete(lesson);
-        lessons.flush();
+        entityManager.flush();
+        // Lock the parent and its items so concurrent inserts/moves cannot add
+        // dependent history while it is being removed. All deletes share this transaction.
+        if (jdbc.queryForList("SELECT id FROM lessons WHERE id=? FOR UPDATE", Long.class, id).isEmpty())
+            throw missing("Không tìm thấy bài học.");
+        jdbc.queryForList("SELECT id FROM writing_items WHERE lesson_id=? ORDER BY id FOR UPDATE", Long.class, id);
+        jdbc.update("""
+                DELETE se FROM submission_errors se
+                JOIN submissions s ON s.id=se.submission_id
+                JOIN writing_items wi ON wi.id=s.item_id WHERE wi.lesson_id=?
+                """, id);
+        jdbc.update("""
+                DELETE sp FROM student_progress sp
+                JOIN writing_items wi ON wi.id=sp.item_id WHERE wi.lesson_id=?
+                """, id);
+        jdbc.update("""
+                DELETE s FROM submissions s
+                JOIN writing_items wi ON wi.id=s.item_id WHERE wi.lesson_id=?
+                """, id);
+        jdbc.update("DELETE FROM writing_items WHERE lesson_id=?", id);
+        jdbc.update("DELETE FROM lessons WHERE id=?", id);
+        // Native bulk deletes must not leave stale managed entities in this context.
+        entityManager.clear();
     }
 
     @Transactional(readOnly = true)

@@ -1,0 +1,8 @@
+{
+  "epoch": 14,
+  "step": 650,
+  "steps": 1047,
+  "loss": 0.5845836733510861,
+  "elapsed_sec": 329,
+  "eta_train_sec": 201
+}

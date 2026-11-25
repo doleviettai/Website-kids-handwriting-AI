@@ -4,26 +4,32 @@ import type { Point, Stroke } from '../types'
 import type { WritingTemplate } from '../api/types'
 import { Icon } from './Icons'
 
-const WIDTH = 900,
-  HEIGHT = 420
-
 export function DrawingCanvas({
   value,
   onChange,
   guide = '',
   disabled = false,
+  mode = 'template',
+  layout = 'template',
+  onActivityChange,
 }: {
   value: WritingTemplate | null
   onChange: (template: WritingTemplate | null) => void
   guide?: string
   disabled?: boolean
+  mode?: 'template' | 'practice'
+  layout?: 'template' | 'single' | 'wide'
+  onActivityChange?: (active: boolean) => void
 }) {
+  const WIDTH = layout === 'single' ? 420 : 900
+  const HEIGHT = layout === 'wide' ? 360 : 420
   const canvas = useRef<HTMLCanvasElement>(null)
   const pointer = useRef<number | null>(null)
   const current = useRef<Stroke>([])
   const animation = useRef<number | null>(null)
   const [playing, setPlaying] = useState(false)
-  const [showGuide, setShowGuide] = useState(true)
+  const [inking, setInking] = useState(false)
+  const [showGuide, setShowGuide] = useState(mode === 'template')
   const [warning, setWarning] = useState('')
   const strokes: Stroke[] = useMemo(
     () =>
@@ -34,7 +40,7 @@ export function DrawingCanvas({
           t: p.t,
         })),
       ),
-    [value],
+    [value, WIDTH, HEIGHT],
   )
   const strokesRef = useRef(strokes)
   // Updated after a render; pointer handlers always use the most recent saved strokes.
@@ -42,44 +48,47 @@ export function DrawingCanvas({
     strokesRef.current = strokes
   }, [strokes])
 
-  const paint = useCallback((paths: Stroke[], numbered = true) => {
-    const ctx = canvas.current?.getContext('2d')
-    if (!ctx) return
-    ctx.clearRect(0, 0, WIDTH, HEIGHT)
-    ctx.lineWidth = 6
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
-    paths.forEach((stroke, i) => {
-      if (!stroke.length) return
-      ctx.strokeStyle = '#9471b1'
-      ctx.fillStyle = '#9471b1'
-      ctx.beginPath()
-      ctx.moveTo(stroke[0].x, stroke[0].y)
-      stroke.forEach((point) => ctx.lineTo(point.x, point.y))
-      ctx.stroke()
-      if (stroke.length === 1) {
+  const paint = useCallback(
+    (paths: Stroke[], numbered = true) => {
+      const ctx = canvas.current?.getContext('2d')
+      if (!ctx) return
+      ctx.clearRect(0, 0, WIDTH, HEIGHT)
+      ctx.lineWidth = layout === 'single' ? WIDTH * 0.018 : 3
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      paths.forEach((stroke, i) => {
+        if (!stroke.length) return
+        ctx.strokeStyle = '#9471b1'
+        ctx.fillStyle = '#9471b1'
         ctx.beginPath()
-        ctx.arc(stroke[0].x, stroke[0].y, 3, 0, 2 * Math.PI)
-        ctx.fill()
-      }
-      if (numbered) {
-        const x = Math.min(WIDTH - 15, Math.max(15, stroke[0].x)),
-          y = Math.min(HEIGHT - 15, Math.max(15, stroke[0].y - 22))
-        ctx.fillStyle = '#ff8d83'
-        ctx.beginPath()
-        ctx.arc(x, y, 13, 0, 2 * Math.PI)
-        ctx.fill()
-        ctx.fillStyle = 'white'
-        ctx.font = 'bold 16px Nunito, sans-serif'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(String(i + 1), x, y)
-      }
-    })
-  }, [])
+        ctx.moveTo(stroke[0].x, stroke[0].y)
+        stroke.forEach((point) => ctx.lineTo(point.x, point.y))
+        ctx.stroke()
+        if (stroke.length === 1) {
+          ctx.beginPath()
+          ctx.arc(stroke[0].x, stroke[0].y, 3, 0, 2 * Math.PI)
+          ctx.fill()
+        }
+        if (numbered) {
+          const x = Math.min(WIDTH - 15, Math.max(15, stroke[0].x)),
+            y = Math.min(HEIGHT - 15, Math.max(15, stroke[0].y - 22))
+          ctx.fillStyle = '#ff8d83'
+          ctx.beginPath()
+          ctx.arc(x, y, 13, 0, 2 * Math.PI)
+          ctx.fill()
+          ctx.fillStyle = 'white'
+          ctx.font = 'bold 16px Nunito, sans-serif'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(String(i + 1), x, y)
+        }
+      })
+    },
+    [WIDTH, HEIGHT, layout],
+  )
   useEffect(() => {
-    if (!playing) paint(strokes)
-  }, [strokes, playing, paint])
+    if (!playing) paint(strokes, mode === 'template')
+  }, [strokes, playing, paint, mode])
   useEffect(
     () => () => {
       if (animation.current !== null) cancelAnimationFrame(animation.current)
@@ -88,21 +97,21 @@ export function DrawingCanvas({
   )
 
   function point(event: PointerEvent<HTMLCanvasElement>): Point {
-    const rect = event.currentTarget.getBoundingClientRect()
+    const rect = canvas.current!.getBoundingClientRect()
     return {
-      x: Math.round(
-        Math.max(
-          0,
-          Math.min(WIDTH, ((event.clientX - rect.left) * WIDTH) / rect.width),
-        ),
+      x: Math.max(
+        0,
+        Math.min(WIDTH, ((event.clientX - rect.left) * WIDTH) / rect.width),
       ),
-      y: Math.round(
-        Math.max(
-          0,
-          Math.min(HEIGHT, ((event.clientY - rect.top) * HEIGHT) / rect.height),
-        ),
+      y: Math.max(
+        0,
+        Math.min(HEIGHT, ((event.clientY - rect.top) * HEIGHT) / rect.height),
       ),
-      t: Date.now(),
+      t: Math.max(
+        Date.now(),
+        current.current.at(-1)?.t ?? 0,
+        strokesRef.current.at(-1)?.at(-1)?.t ?? 0,
+      ),
     }
   }
   function start(event: PointerEvent<HTMLCanvasElement>) {
@@ -115,8 +124,10 @@ export function DrawingCanvas({
     setWarning('')
     pointer.current = event.pointerId
     current.current = [point(event)]
+    setInking(true)
+    onActivityChange?.(true)
     event.currentTarget.setPointerCapture(event.pointerId)
-    paint([...strokesRef.current, current.current])
+    paint([...strokesRef.current, current.current], mode === 'template')
   }
   function move(event: PointerEvent<HTMLCanvasElement>) {
     if (pointer.current !== event.pointerId) return
@@ -128,24 +139,34 @@ export function DrawingCanvas({
       setWarning('Mẫu đã đạt 20.000 điểm. Hãy lưu hoặc đơn giản hóa mẫu.')
       return
     }
-    const next = point(event),
-      last = current.current.at(-1)!
-    if (Math.hypot(next.x - last.x, next.y - last.y) < 2) return
-    current.current.push(next)
-    paint([...strokesRef.current, current.current])
+    const events = event.nativeEvent.getCoalescedEvents?.() ?? []
+    for (const sample of events.length ? events : [event]) {
+      if (
+        current.current.length +
+          strokesRef.current.reduce((n, s) => n + s.length, 0) >=
+        20000
+      )
+        break
+      current.current.push(point(sample as PointerEvent<HTMLCanvasElement>))
+    }
+    paint([...strokesRef.current, current.current], mode === 'template')
   }
   function end(event: PointerEvent<HTMLCanvasElement>, cancel = false) {
     if (pointer.current !== event.pointerId) return
     const completed = [...current.current]
     current.current = []
     pointer.current = null
-    if (!cancel)
+    setInking(false)
+    onActivityChange?.(false)
+    if (!cancel) {
+      const updated = [...strokesRef.current, completed]
+      strokesRef.current = updated
       onChange({
         width: WIDTH,
         height: HEIGHT,
-        strokes: [...strokesRef.current, completed],
+        strokes: updated,
       })
-    else paint(strokesRef.current)
+    } else paint(strokesRef.current)
     if (event.currentTarget.hasPointerCapture(event.pointerId))
       event.currentTarget.releasePointerCapture(event.pointerId)
   }
@@ -196,12 +217,14 @@ export function DrawingCanvas({
     link.click()
     URL.revokeObjectURL(url)
   }
-  const locked = disabled || playing
+  const locked = disabled || playing || inking
   return (
     <section className="drawing-editor" aria-label="Trình vẽ mẫu chữ">
       <div className="drawing-toolbar">
         <span>
-          <Icon name="pen" size={18} /> Mẫu chữ · {strokes.length} nét
+          <Icon name="pen" size={18} />{' '}
+          {mode === 'template' ? 'Mẫu chữ' : 'Bài viết của bé'} ·{' '}
+          {strokes.length} nét
         </span>
         <label>
           <input
@@ -212,7 +235,21 @@ export function DrawingCanvas({
           Chữ gợi ý
         </label>
       </div>
-      <div className="template-surface">
+      <div className={`template-surface canvas-${layout}`}>
+        {layout === 'single' && (
+          <div className="single-guidelines" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+            <i />
+          </div>
+        )}
+        {layout === 'wide' && (
+          <div className="wide-guidelines" aria-hidden="true">
+            <i />
+            <i />
+          </div>
+        )}
         {showGuide && guide && (
           <span
             className={`template-guide ${guide.length > 4 ? 'long' : ''}`}
@@ -225,7 +262,13 @@ export function DrawingCanvas({
           ref={canvas}
           width={WIDTH}
           height={HEIGHT}
-          aria-label="Khung vẽ mẫu chữ"
+          aria-label={
+            mode === 'template'
+              ? 'Khung vẽ mẫu chữ'
+              : layout === 'single'
+                ? 'Khung viết chữ đơn'
+                : 'Khung viết ngang'
+          }
           onPointerDown={start}
           onPointerMove={move}
           onPointerUp={(event) => end(event)}
@@ -235,8 +278,9 @@ export function DrawingCanvas({
         />
       </div>
       <p className="drawing-help">
-        Vẽ bằng chuột, bút hoặc cảm ứng. Mỗi lần nhấc bút là một nét; số tròn
-        đánh dấu thứ tự và điểm bắt đầu.
+        {mode === 'template'
+          ? 'Vẽ bằng chuột, bút hoặc cảm ứng. Mỗi lần nhấc bút là một nét; số tròn đánh dấu thứ tự và điểm bắt đầu.'
+          : 'Bé viết chậm, rõ nét. Mỗi lần nhấc tay hoặc bút sẽ bắt đầu một nét mới.'}
       </p>
       <div className="drawing-actions">
         <button
@@ -266,7 +310,8 @@ export function DrawingCanvas({
             setWarning('')
           }}
         >
-          <Icon name="trash" size={17} /> Bỏ mẫu nét
+          <Icon name="trash" size={17} />{' '}
+          {mode === 'template' ? 'Bỏ mẫu nét' : 'Viết lại'}
         </button>
         <button
           type="button"
@@ -292,8 +337,9 @@ export function DrawingCanvas({
         </p>
       )}
       <span className="drawing-note">
-        Mẫu được lưu cùng nội dung khi bấm “Lưu nội dung”. Để trống nếu chưa có
-        mẫu chuẩn.
+        {mode === 'template'
+          ? 'Mẫu được lưu cùng nội dung khi bấm “Lưu nội dung”. Để trống nếu chưa có mẫu chuẩn.'
+          : 'Chữ gợi ý không được gửi cho model. Chỉ nét bút của bé được dùng để nhận dạng.'}
       </span>
     </section>
   )

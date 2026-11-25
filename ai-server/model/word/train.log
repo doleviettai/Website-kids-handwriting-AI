@@ -1,0 +1,341 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794221359.574187   35192 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794221361.909867   35192 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Đang tính thống kê train và học mô hình ngôn ngữ thống kê...
+I0000 00:00:1794221366.236616   35192 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+Khởi tạo từ D:\Coding\Python\HandWriting\models\seq\thu\best.keras; chuẩn hóa theo bộ train mới.
+train=66991 val=18639 test=25114 batch=64 params=557,300 GPU=[]
+E0000 00:00:1794221371.843495   35192 util.cc:131] oneDNN supports DT_BOOL only on platforms with AVX-512. Falling back to the default Eigen-based implementation if present.
+epoch 1 step 1/1047 loss=2.586 elapsed=5s
+epoch 1 step 50/1047 loss=2.860 elapsed=22s
+epoch 1 step 100/1047 loss=2.850 elapsed=42s
+epoch 1 step 150/1047 loss=2.798 elapsed=61s
+epoch 1 step 200/1047 loss=2.753 elapsed=80s
+epoch 1 step 250/1047 loss=2.732 elapsed=101s
+epoch 1 step 300/1047 loss=2.668 elapsed=119s
+epoch 1 step 350/1047 loss=2.652 elapsed=138s
+epoch 1 step 400/1047 loss=2.611 elapsed=156s
+epoch 1 step 450/1047 loss=2.598 elapsed=178s
+epoch 1 step 500/1047 loss=2.582 elapsed=200s
+epoch 1 step 550/1047 loss=2.562 elapsed=224s
+epoch 1 step 600/1047 loss=2.526 elapsed=244s
+epoch 1 step 650/1047 loss=2.493 elapsed=264s
+epoch 1 step 700/1047 loss=2.473 elapsed=285s
+epoch 1 step 750/1047 loss=2.449 elapsed=307s
+epoch 1 step 800/1047 loss=2.421 elapsed=328s
+epoch 1 step 850/1047 loss=2.404 elapsed=350s
+epoch 1 step 900/1047 loss=2.388 elapsed=373s
+epoch 1 step 950/1047 loss=2.377 elapsed=397s
+epoch 1 step 1000/1047 loss=2.360 elapsed=420s
+epoch 1 step 1047/1047 loss=2.343 elapsed=441s
+epoch   1 | loss 2.343 | train CER 0.1198 | val CER 0.1338 | WER 0.3329 | lr 5.0e-04 | 893s | 'ì'->'T'
+epoch 2 step 1/1047 loss=1.547 elapsed=0s
+epoch 2 step 50/1047 loss=1.928 elapsed=23s
+epoch 2 step 100/1047 loss=1.927 elapsed=45s
+epoch 2 step 150/1047 loss=1.921 elapsed=66s
+epoch 2 step 200/1047 loss=1.896 elapsed=88s
+epoch 2 step 250/1047 loss=1.901 elapsed=112s
+epoch 2 step 300/1047 loss=1.884 elapsed=135s
+epoch 2 step 350/1047 loss=1.852 elapsed=155s
+epoch 2 step 400/1047 loss=1.832 elapsed=176s
+epoch 2 step 450/1047 loss=1.814 elapsed=200s
+epoch 2 step 500/1047 loss=1.821 elapsed=225s
+epoch 2 step 550/1047 loss=1.816 elapsed=247s
+epoch 2 step 600/1047 loss=1.799 elapsed=269s
+epoch 2 step 650/1047 loss=1.784 elapsed=290s
+epoch 2 step 700/1047 loss=1.778 elapsed=311s
+epoch 2 step 750/1047 loss=1.766 elapsed=333s
+epoch 2 step 800/1047 loss=1.753 elapsed=356s
+epoch 2 step 850/1047 loss=1.743 elapsed=378s
+epoch 2 step 900/1047 loss=1.733 elapsed=408s
+epoch 2 step 950/1047 loss=1.720 elapsed=429s
+epoch 2 step 1000/1047 loss=1.702 elapsed=450s
+epoch 2 step 1047/1047 loss=1.689 elapsed=470s
+epoch   2 | loss 1.689 | train CER 0.0847 | val CER 0.1060 | WER 0.2683 | lr 5.0e-04 | 929s | 'ì'->'T'
+epoch 3 step 1/1047 loss=1.790 elapsed=1s
+epoch 3 step 50/1047 loss=1.444 elapsed=30s
+epoch 3 step 100/1047 loss=1.408 elapsed=55s
+epoch 3 step 150/1047 loss=1.359 elapsed=74s
+epoch 3 step 200/1047 loss=1.402 elapsed=98s
+epoch 3 step 250/1047 loss=1.429 elapsed=119s
+epoch 3 step 300/1047 loss=1.419 elapsed=138s
+epoch 3 step 350/1047 loss=1.429 elapsed=161s
+epoch 3 step 400/1047 loss=1.421 elapsed=184s
+epoch 3 step 450/1047 loss=1.408 elapsed=204s
+epoch 3 step 500/1047 loss=1.393 elapsed=223s
+epoch 3 step 550/1047 loss=1.394 elapsed=244s
+epoch 3 step 600/1047 loss=1.389 elapsed=265s
+epoch 3 step 650/1047 loss=1.388 elapsed=283s
+epoch 3 step 700/1047 loss=1.403 elapsed=304s
+epoch 3 step 750/1047 loss=1.391 elapsed=323s
+epoch 3 step 800/1047 loss=1.387 elapsed=342s
+epoch 3 step 850/1047 loss=1.377 elapsed=361s
+epoch 3 step 900/1047 loss=1.374 elapsed=380s
+epoch 3 step 950/1047 loss=1.372 elapsed=400s
+epoch 3 step 1000/1047 loss=1.370 elapsed=417s
+epoch 3 step 1047/1047 loss=1.367 elapsed=435s
+epoch   3 | loss 1.367 | train CER 0.0675 | val CER 0.0942 | WER 0.2363 | lr 5.0e-04 | 814s | 'ì'->'Th'
+epoch 4 step 1/1047 loss=0.783 elapsed=0s
+epoch 4 step 50/1047 loss=1.176 elapsed=27s
+epoch 4 step 100/1047 loss=1.182 elapsed=49s
+epoch 4 step 150/1047 loss=1.194 elapsed=72s
+epoch 4 step 200/1047 loss=1.211 elapsed=97s
+epoch 4 step 250/1047 loss=1.227 elapsed=121s
+epoch 4 step 300/1047 loss=1.209 elapsed=142s
+epoch 4 step 350/1047 loss=1.205 elapsed=165s
+epoch 4 step 400/1047 loss=1.216 elapsed=192s
+epoch 4 step 450/1047 loss=1.206 elapsed=217s
+epoch 4 step 500/1047 loss=1.194 elapsed=241s
+epoch 4 step 550/1047 loss=1.181 elapsed=263s
+epoch 4 step 600/1047 loss=1.176 elapsed=285s
+epoch 4 step 650/1047 loss=1.182 elapsed=311s
+epoch 4 step 700/1047 loss=1.180 elapsed=337s
+epoch 4 step 750/1047 loss=1.181 elapsed=361s
+epoch 4 step 800/1047 loss=1.188 elapsed=386s
+epoch 4 step 850/1047 loss=1.188 elapsed=409s
+epoch 4 step 900/1047 loss=1.183 elapsed=430s
+epoch 4 step 950/1047 loss=1.182 elapsed=455s
+epoch 4 step 1000/1047 loss=1.180 elapsed=479s
+epoch 4 step 1047/1047 loss=1.177 elapsed=503s
+epoch   4 | loss 1.177 | train CER 0.0603 | val CER 0.0861 | WER 0.2186 | lr 5.0e-04 | 887s | 'ì'->'Ti'
+epoch 5 step 1/1047 loss=0.850 elapsed=1s
+epoch 5 step 50/1047 loss=0.961 elapsed=24s
+epoch 5 step 100/1047 loss=0.959 elapsed=46s
+epoch 5 step 150/1047 loss=0.989 elapsed=69s
+epoch 5 step 200/1047 loss=1.020 elapsed=92s
+epoch 5 step 250/1047 loss=1.013 elapsed=114s
+epoch 5 step 300/1047 loss=1.024 elapsed=138s
+epoch 5 step 350/1047 loss=1.033 elapsed=164s
+epoch 5 step 400/1047 loss=1.038 elapsed=190s
+epoch 5 step 450/1047 loss=1.049 elapsed=215s
+epoch 5 step 500/1047 loss=1.045 elapsed=238s
+epoch 5 step 550/1047 loss=1.046 elapsed=260s
+epoch 5 step 600/1047 loss=1.051 elapsed=286s
+epoch 5 step 650/1047 loss=1.046 elapsed=311s
+epoch 5 step 700/1047 loss=1.044 elapsed=334s
+epoch 5 step 750/1047 loss=1.042 elapsed=357s
+epoch 5 step 800/1047 loss=1.044 elapsed=381s
+epoch 5 step 850/1047 loss=1.048 elapsed=406s
+epoch 5 step 900/1047 loss=1.050 elapsed=429s
+epoch 5 step 950/1047 loss=1.057 elapsed=457s
+epoch 5 step 1000/1047 loss=1.057 elapsed=480s
+epoch 5 step 1047/1047 loss=1.054 elapsed=502s
+epoch   5 | loss 1.054 | train CER 0.0499 | val CER 0.0810 | WER 0.2067 | lr 5.0e-04 | 982s | 'ì'->'Tr'
+epoch 6 step 1/1047 loss=0.624 elapsed=1s
+epoch 6 step 50/1047 loss=1.064 elapsed=22s
+epoch 6 step 100/1047 loss=1.006 elapsed=43s
+epoch 6 step 150/1047 loss=0.980 elapsed=66s
+epoch 6 step 200/1047 loss=0.968 elapsed=88s
+epoch 6 step 250/1047 loss=0.957 elapsed=110s
+epoch 6 step 300/1047 loss=0.968 elapsed=134s
+epoch 6 step 350/1047 loss=0.981 elapsed=158s
+epoch 6 step 400/1047 loss=0.991 elapsed=180s
+epoch 6 step 450/1047 loss=0.989 elapsed=202s
+epoch 6 step 500/1047 loss=0.993 elapsed=223s
+epoch 6 step 550/1047 loss=0.986 elapsed=244s
+epoch 6 step 600/1047 loss=0.980 elapsed=265s
+epoch 6 step 650/1047 loss=0.973 elapsed=287s
+epoch 6 step 700/1047 loss=0.974 elapsed=309s
+epoch 6 step 750/1047 loss=0.976 elapsed=332s
+epoch 6 step 800/1047 loss=0.973 elapsed=354s
+epoch 6 step 850/1047 loss=0.967 elapsed=375s
+epoch 6 step 900/1047 loss=0.966 elapsed=395s
+epoch 6 step 950/1047 loss=0.963 elapsed=420s
+epoch 6 step 1000/1047 loss=0.961 elapsed=440s
+epoch 6 step 1047/1047 loss=0.958 elapsed=458s
+epoch   6 | loss 0.958 | train CER 0.0443 | val CER 0.0760 | WER 0.1943 | lr 5.0e-04 | 864s | 'ì'->'Tì'
+epoch 7 step 1/1047 loss=0.605 elapsed=1s
+epoch 7 step 50/1047 loss=0.915 elapsed=27s
+epoch 7 step 100/1047 loss=0.891 elapsed=51s
+epoch 7 step 150/1047 loss=0.857 elapsed=74s
+epoch 7 step 200/1047 loss=0.838 elapsed=95s
+epoch 7 step 250/1047 loss=0.855 elapsed=118s
+epoch 7 step 300/1047 loss=0.848 elapsed=140s
+epoch 7 step 350/1047 loss=0.867 elapsed=165s
+epoch 7 step 400/1047 loss=0.871 elapsed=187s
+epoch 7 step 450/1047 loss=0.872 elapsed=210s
+epoch 7 step 500/1047 loss=0.886 elapsed=234s
+epoch 7 step 550/1047 loss=0.879 elapsed=255s
+epoch 7 step 600/1047 loss=0.883 elapsed=279s
+epoch 7 step 650/1047 loss=0.883 elapsed=303s
+epoch 7 step 700/1047 loss=0.884 elapsed=325s
+epoch 7 step 750/1047 loss=0.881 elapsed=347s
+epoch 7 step 800/1047 loss=0.880 elapsed=369s
+epoch 7 step 850/1047 loss=0.880 elapsed=392s
+epoch 7 step 900/1047 loss=0.877 elapsed=413s
+epoch 7 step 950/1047 loss=0.879 elapsed=435s
+epoch 7 step 1000/1047 loss=0.882 elapsed=458s
+epoch 7 step 1047/1047 loss=0.882 elapsed=479s
+epoch   7 | loss 0.882 | train CER 0.0372 | val CER 0.0713 | WER 0.1848 | lr 5.0e-04 | 919s | 'ì'->'Tì'
+epoch 8 step 1/1047 loss=0.530 elapsed=1s
+epoch 8 step 50/1047 loss=0.834 elapsed=23s
+epoch 8 step 100/1047 loss=0.800 elapsed=44s
+epoch 8 step 150/1047 loss=0.814 elapsed=69s
+epoch 8 step 200/1047 loss=0.797 elapsed=92s
+epoch 8 step 250/1047 loss=0.789 elapsed=114s
+epoch 8 step 300/1047 loss=0.788 elapsed=137s
+epoch 8 step 350/1047 loss=0.787 elapsed=160s
+epoch 8 step 400/1047 loss=0.798 elapsed=182s
+epoch 8 step 450/1047 loss=0.809 elapsed=205s
+epoch 8 step 500/1047 loss=0.806 elapsed=228s
+epoch 8 step 550/1047 loss=0.804 elapsed=251s
+epoch 8 step 600/1047 loss=0.801 elapsed=277s
+epoch 8 step 650/1047 loss=0.796 elapsed=301s
+epoch 8 step 700/1047 loss=0.804 elapsed=323s
+epoch 8 step 750/1047 loss=0.803 elapsed=345s
+epoch 8 step 800/1047 loss=0.801 elapsed=368s
+epoch 8 step 850/1047 loss=0.803 elapsed=391s
+epoch 8 step 900/1047 loss=0.804 elapsed=414s
+epoch 8 step 950/1047 loss=0.809 elapsed=438s
+epoch 8 step 1000/1047 loss=0.813 elapsed=464s
+epoch 8 step 1047/1047 loss=0.811 elapsed=484s
+epoch   8 | loss 0.811 | train CER 0.0389 | val CER 0.0738 | WER 0.1884 | lr 5.0e-04 | 905s | 'ì'->'Tì'
+epoch 9 step 1/1047 loss=0.528 elapsed=0s
+epoch 9 step 50/1047 loss=0.719 elapsed=22s
+epoch 9 step 100/1047 loss=0.724 elapsed=45s
+epoch 9 step 150/1047 loss=0.703 elapsed=67s
+epoch 9 step 200/1047 loss=0.716 elapsed=90s
+epoch 9 step 250/1047 loss=0.726 elapsed=113s
+epoch 9 step 300/1047 loss=0.746 elapsed=137s
+epoch 9 step 350/1047 loss=0.738 elapsed=159s
+epoch 9 step 400/1047 loss=0.741 elapsed=181s
+epoch 9 step 450/1047 loss=0.753 elapsed=205s
+epoch 9 step 500/1047 loss=0.758 elapsed=227s
+epoch 9 step 550/1047 loss=0.758 elapsed=252s
+epoch 9 step 600/1047 loss=0.764 elapsed=277s
+epoch 9 step 650/1047 loss=0.760 elapsed=299s
+epoch 9 step 700/1047 loss=0.757 elapsed=322s
+epoch 9 step 750/1047 loss=0.756 elapsed=345s
+epoch 9 step 800/1047 loss=0.758 elapsed=368s
+epoch 9 step 850/1047 loss=0.760 elapsed=391s
+epoch 9 step 900/1047 loss=0.758 elapsed=413s
+epoch 9 step 950/1047 loss=0.759 elapsed=434s
+epoch 9 step 1000/1047 loss=0.762 elapsed=458s
+epoch 9 step 1047/1047 loss=0.760 elapsed=478s
+epoch   9 | loss 0.760 | train CER 0.0348 | val CER 0.0718 | WER 0.1849 | lr 5.0e-04 | 898s | 'ì'->'Tì'
+epoch 10 step 1/1047 loss=0.513 elapsed=1s
+epoch 10 step 50/1047 loss=0.711 elapsed=24s
+epoch 10 step 100/1047 loss=0.684 elapsed=46s
+epoch 10 step 150/1047 loss=0.690 elapsed=68s
+epoch 10 step 200/1047 loss=0.697 elapsed=93s
+epoch 10 step 250/1047 loss=0.701 elapsed=116s
+epoch 10 step 300/1047 loss=0.715 elapsed=140s
+epoch 10 step 350/1047 loss=0.725 elapsed=163s
+epoch 10 step 400/1047 loss=0.728 elapsed=186s
+epoch 10 step 450/1047 loss=0.727 elapsed=207s
+epoch 10 step 500/1047 loss=0.727 elapsed=231s
+epoch 10 step 550/1047 loss=0.723 elapsed=253s
+epoch 10 step 600/1047 loss=0.725 elapsed=276s
+epoch 10 step 650/1047 loss=0.725 elapsed=296s
+epoch 10 step 700/1047 loss=0.720 elapsed=321s
+epoch 10 step 750/1047 loss=0.716 elapsed=344s
+epoch 10 step 800/1047 loss=0.716 elapsed=371s
+epoch 10 step 850/1047 loss=0.718 elapsed=394s
+epoch 10 step 900/1047 loss=0.721 elapsed=416s
+epoch 10 step 950/1047 loss=0.719 elapsed=437s
+epoch 10 step 1000/1047 loss=0.720 elapsed=459s
+epoch 10 step 1047/1047 loss=0.715 elapsed=482s
+epoch  10 | loss 0.715 | train CER 0.0342 | val CER 0.0677 | WER 0.1724 | lr 5.0e-04 | 914s | 'ì'->'Tì'
+epoch 11 step 1/1047 loss=0.636 elapsed=1s
+epoch 11 step 50/1047 loss=0.658 elapsed=25s
+epoch 11 step 100/1047 loss=0.642 elapsed=48s
+epoch 11 step 150/1047 loss=0.629 elapsed=71s
+epoch 11 step 200/1047 loss=0.653 elapsed=95s
+epoch 11 step 250/1047 loss=0.667 elapsed=119s
+epoch 11 step 300/1047 loss=0.658 elapsed=142s
+epoch 11 step 350/1047 loss=0.661 elapsed=166s
+epoch 11 step 400/1047 loss=0.673 elapsed=190s
+epoch 11 step 450/1047 loss=0.667 elapsed=212s
+epoch 11 step 500/1047 loss=0.664 elapsed=234s
+epoch 11 step 550/1047 loss=0.660 elapsed=255s
+epoch 11 step 600/1047 loss=0.656 elapsed=276s
+epoch 11 step 650/1047 loss=0.660 elapsed=301s
+epoch 11 step 700/1047 loss=0.656 elapsed=322s
+epoch 11 step 750/1047 loss=0.660 elapsed=345s
+epoch 11 step 800/1047 loss=0.665 elapsed=368s
+epoch 11 step 850/1047 loss=0.665 elapsed=389s
+epoch 11 step 900/1047 loss=0.670 elapsed=411s
+epoch 11 step 950/1047 loss=0.670 elapsed=432s
+epoch 11 step 1000/1047 loss=0.672 elapsed=456s
+epoch 11 step 1047/1047 loss=0.671 elapsed=476s
+epoch  11 | loss 0.671 | train CER 0.0303 | val CER 0.0662 | WER 0.1704 | lr 5.0e-04 | 890s | 'ì'->'t'
+epoch 12 step 1/1047 loss=0.389 elapsed=1s
+epoch 12 step 50/1047 loss=0.576 elapsed=22s
+epoch 12 step 100/1047 loss=0.631 elapsed=47s
+epoch 12 step 150/1047 loss=0.623 elapsed=68s
+epoch 12 step 200/1047 loss=0.626 elapsed=91s
+epoch 12 step 250/1047 loss=0.616 elapsed=114s
+epoch 12 step 300/1047 loss=0.618 elapsed=136s
+epoch 12 step 350/1047 loss=0.624 elapsed=159s
+epoch 12 step 400/1047 loss=0.621 elapsed=179s
+epoch 12 step 450/1047 loss=0.615 elapsed=201s
+epoch 12 step 500/1047 loss=0.625 elapsed=224s
+epoch 12 step 550/1047 loss=0.625 elapsed=248s
+epoch 12 step 600/1047 loss=0.628 elapsed=272s
+epoch 12 step 650/1047 loss=0.625 elapsed=292s
+epoch 12 step 700/1047 loss=0.630 elapsed=317s
+epoch 12 step 750/1047 loss=0.634 elapsed=341s
+epoch 12 step 800/1047 loss=0.643 elapsed=1268s
+epoch 12 step 850/1047 loss=0.642 elapsed=9808s
+epoch 12 step 900/1047 loss=0.640 elapsed=9831s
+epoch 12 step 950/1047 loss=0.640 elapsed=9859s
+epoch 12 step 1000/1047 loss=0.642 elapsed=9883s
+epoch 12 step 1047/1047 loss=0.642 elapsed=9906s
+epoch  12 | loss 0.642 | train CER 0.0297 | val CER 0.0635 | WER 0.1631 | lr 5.0e-04 | 10365s | 'ì'->'Tì'
+epoch 13 step 1/1047 loss=0.499 elapsed=0s
+epoch 13 step 50/1047 loss=0.682 elapsed=27s
+epoch 13 step 100/1047 loss=0.619 elapsed=52s
+epoch 13 step 150/1047 loss=0.625 elapsed=78s
+epoch 13 step 200/1047 loss=0.614 elapsed=102s
+epoch 13 step 250/1047 loss=0.602 elapsed=125s
+epoch 13 step 300/1047 loss=0.599 elapsed=151s
+epoch 13 step 350/1047 loss=0.604 elapsed=172s
+epoch 13 step 400/1047 loss=0.608 elapsed=196s
+epoch 13 step 450/1047 loss=0.605 elapsed=218s
+epoch 13 step 500/1047 loss=0.605 elapsed=244s
+epoch 13 step 550/1047 loss=0.603 elapsed=268s
+epoch 13 step 600/1047 loss=0.603 elapsed=292s
+epoch 13 step 650/1047 loss=0.608 elapsed=318s
+epoch 13 step 700/1047 loss=0.604 elapsed=341s
+epoch 13 step 750/1047 loss=0.604 elapsed=364s
+epoch 13 step 800/1047 loss=0.603 elapsed=389s
+epoch 13 step 850/1047 loss=0.604 elapsed=411s
+epoch 13 step 900/1047 loss=0.604 elapsed=435s
+epoch 13 step 950/1047 loss=0.608 elapsed=458s
+epoch 13 step 1000/1047 loss=0.610 elapsed=484s
+epoch 13 step 1047/1047 loss=0.611 elapsed=506s
+epoch  13 | loss 0.611 | train CER 0.0315 | val CER 0.0632 | WER 0.1627 | lr 5.0e-04 | 948s | 'ì'->'i'
+epoch 14 step 1/1047 loss=0.226 elapsed=1s
+epoch 14 step 50/1047 loss=0.483 elapsed=24s
+epoch 14 step 100/1047 loss=0.500 elapsed=47s
+epoch 14 step 150/1047 loss=0.533 elapsed=71s
+epoch 14 step 200/1047 loss=0.540 elapsed=96s
+epoch 14 step 250/1047 loss=0.565 elapsed=122s
+epoch 14 step 300/1047 loss=0.579 elapsed=149s
+epoch 14 step 350/1047 loss=0.570 elapsed=172s
+epoch 14 step 400/1047 loss=0.581 elapsed=199s
+epoch 14 step 450/1047 loss=0.582 elapsed=223s
+epoch 14 step 500/1047 loss=0.584 elapsed=251s
+epoch 14 step 550/1047 loss=0.585 elapsed=277s
+epoch 14 step 600/1047 loss=0.581 elapsed=303s
+epoch 14 step 650/1047 loss=0.585 elapsed=329s
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794288046.388603   29536 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794288052.381998   29536 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Run word_stable đã tồn tại. Dùng --resume hoặc chọn tên mới.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "D:\Coding\Python\HandWriting\src\seq\run_full.py", line 93, in <module>
+    main()
+  File "D:\Coding\Python\HandWriting\src\seq\run_full.py", line 80, in main
+    run("src.seq.train_seq", *train_args)
+  File "D:\Coding\Python\HandWriting\src\seq\run_full.py", line 64, in run
+    subprocess.run([sys.executable, "-u", "-m", module, *map(str, arguments)],
+  File "C:\Users\ACER NITRO 5\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['D:\\Coding\\Python\\HandWriting\\.venv\\Scripts\\python.exe', '-u', '-m', 'src.seq.train_seq', '--run-name', 'word_stable', '--epochs', '160', '--threads', '6', '--data-name', 'word_v2', '--lr', '0.0005', '--init-from', 'thu']' returned non-zero exit status 1.

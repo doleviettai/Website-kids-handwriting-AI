@@ -1,0 +1,20 @@
+{
+  "pid": 11972,
+  "command": [
+    "D:\\Coding\\Python\\HandWriting\\.venv\\Scripts\\python.exe",
+    "-u",
+    "-m",
+    "src.seq.run_full",
+    "--run-name",
+    "word_stable",
+    "--data-name",
+    "word_v2",
+    "--init-from",
+    "thu",
+    "--lr",
+    "0.0005",
+    "--epochs",
+    "160"
+  ],
+  "log": "D:\\Coding\\Python\\HandWriting\\models\\seq\\word_stable\\train.log"
+}

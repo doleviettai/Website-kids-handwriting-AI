@@ -1,4 +1,11 @@
-export type Grade = 'MAU_GIAO' | 'LOP_1'
+export type Grade =
+  | 'MAU_GIAO'
+  | 'LOP_1'
+  | 'LOP_2'
+  | 'LOP_3'
+  | 'LOP_4'
+  | 'LOP_5'
+export type Subject = 'TIENG_VIET' | 'TOAN'
 export type ItemType = 'LETTER' | 'DIGIT' | 'DIGRAPH' | 'WORD' | 'SENTENCE'
 export type ModelTask = 'SINGLE_CHAR' | 'COMPOUND' | 'PARAGRAPH'
 export type Point = { x: number; y: number; t: number }

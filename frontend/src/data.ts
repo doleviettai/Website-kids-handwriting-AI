@@ -117,7 +117,24 @@ export const lessons: Lesson[] = [
     minutes: 8,
   },
 ]
-export const gradeLabels = { MAU_GIAO: 'Mẫu giáo', LOP_1: 'Lớp 1' }
+export const gradeLabels: Record<
+  'MAU_GIAO' | 'LOP_1' | 'LOP_2' | 'LOP_3' | 'LOP_4' | 'LOP_5',
+  string
+> = {
+  MAU_GIAO: 'Mẫu giáo',
+  LOP_1: 'Lớp 1',
+  LOP_2: 'Lớp 2',
+  LOP_3: 'Lớp 3',
+  LOP_4: 'Lớp 4',
+  LOP_5: 'Lớp 5',
+}
+export const gradeOptions = (
+  Object.keys(gradeLabels) as Array<keyof typeof gradeLabels>
+).map((value) => ({ value, label: gradeLabels[value] }))
+export const subjectLabels: Record<'TIENG_VIET' | 'TOAN', string> = {
+  TIENG_VIET: 'Tiếng Việt',
+  TOAN: 'Toán',
+}
 export const typeLabels = {
   LETTER: 'Chữ cái',
   DIGIT: 'Chữ số',

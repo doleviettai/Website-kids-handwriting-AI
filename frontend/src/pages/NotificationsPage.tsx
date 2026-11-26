@@ -44,6 +44,29 @@ export function NotificationsPage() {
       }
       if (item.submissionId != null) {
         navigate(`/bai-viet/${item.submissionId}`)
+      } else if (
+        item.type === 'CLASS_INVITATION' ||
+        item.type === 'HOMEWORK_ASSIGNED' ||
+        item.type === 'HOMEWORK_GRADED'
+      ) {
+        navigate('/lop-hoc')
+      } else if (item.type === 'JOIN_REQUEST') {
+        try {
+          const res = await api.get<Array<{ id: number; name: string }>>(
+            '/teacher/classrooms',
+          )
+          const matched =
+            res.data.find((c) => item.title.includes(c.name)) ?? res.data[0]
+          if (matched) {
+            navigate(`/giao-vien/lop/${matched.id}`)
+            return
+          }
+        } catch {
+          /* Fallback to teacher classes list */
+        }
+        navigate('/giao-vien')
+      } else if (item.type === 'TEACHER_REPORT') {
+        navigate('/phu-huynh')
       }
     } catch (failure) {
       setActionError(apiError(failure))
@@ -190,7 +213,7 @@ export function NotificationsPage() {
                       Đã đọc
                     </button>
                   )}
-                  {item.submissionId != null && (
+                  {item.submissionId != null ? (
                     <button
                       type="button"
                       className="soft-button"
@@ -199,7 +222,27 @@ export function NotificationsPage() {
                       Xem bài viết
                       <Icon name="arrow" size={15} />
                     </button>
-                  )}
+                  ) : item.type === 'JOIN_REQUEST' ? (
+                    <button
+                      type="button"
+                      className="primary-button"
+                      onClick={() => void openNotification(item)}
+                    >
+                      Mở lớp duyệt
+                      <Icon name="arrow" size={15} />
+                    </button>
+                  ) : item.type === 'CLASS_INVITATION' ||
+                    item.type === 'HOMEWORK_ASSIGNED' ||
+                    item.type === 'HOMEWORK_GRADED' ? (
+                    <button
+                      type="button"
+                      className="soft-button"
+                      onClick={() => void openNotification(item)}
+                    >
+                      Mở lớp & bài tập
+                      <Icon name="arrow" size={15} />
+                    </button>
+                  ) : null}
                 </div>
               </article>
             ))}

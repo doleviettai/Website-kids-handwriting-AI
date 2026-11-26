@@ -78,6 +78,29 @@ export function NotificationBell() {
     }
     if (notice.submissionId != null) {
       navigate(`/bai-viet/${notice.submissionId}`)
+    } else if (notice.type === 'TEACHER_REPORT') {
+      navigate('/phu-huynh')
+    } else if (
+      notice.type === 'CLASS_INVITATION' ||
+      notice.type === 'HOMEWORK_ASSIGNED' ||
+      notice.type === 'HOMEWORK_GRADED'
+    ) {
+      navigate('/lop-hoc')
+    } else if (notice.type === 'JOIN_REQUEST') {
+      try {
+        const res = await api.get<Array<{ id: number; name: string }>>(
+          '/teacher/classrooms',
+        )
+        const matched =
+          res.data.find((c) => notice.title.includes(c.name)) ?? res.data[0]
+        if (matched) {
+          navigate(`/giao-vien/lop/${matched.id}`)
+          return
+        }
+      } catch {
+        /* Fallback to notifications page below. */
+      }
+      navigate('/thong-bao')
     } else {
       navigate('/thong-bao')
     }

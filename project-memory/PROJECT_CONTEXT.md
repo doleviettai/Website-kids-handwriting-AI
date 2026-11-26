@@ -59,7 +59,7 @@ Schema tham chiếu [database.dbml](database.dbml) gồm 9 bảng nền (`users`
 
 ## Auth và dữ liệu gia đình
 
-- Vai trò `PARENT`, `ADMIN`; trẻ là hồ sơ thuộc phụ huynh, không có tài khoản STUDENT.
+- Vai trò `PARENT`, `TEACHER`, `ADMIN`; trẻ là hồ sơ thuộc phụ huynh, không có tài khoản STUDENT. Giáo viên do ADMIN cấp tài khoản, chỉ quản lý lớp và học sinh trong lớp mình (liên kết qua mã mời lớp do phụ huynh nhập).
 - Đăng ký qua web luôn PARENT. JWT HS256, thời hạn 1 giờ, secret Base64 >=32 byte trong config local/biến môi trường.
 - Server giữ allowlist phiên JWT trong bộ nhớ. Logout thu hồi token hiện tại; restart server kết thúc toàn bộ phiên, yêu cầu đăng nhập lại. Chưa có refresh token/Redis/đa instance.
 - Frontend lưu JWT trong sessionStorage của tab; ID bé đang chọn gắn với ID tài khoản. Chỉ tùy chọn giao diện dùng LocalStorage. Không tự nhập dữ liệu demo cũ vào tài khoản.

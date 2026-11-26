@@ -1,10 +1,10 @@
-import type { Grade, ItemType, Stroke } from '../types'
+import type { Grade, ItemType, Stroke, Subject } from '../types'
 
 export type Account = {
   id: number
   email: string
   fullName: string
-  role: 'PARENT' | 'ADMIN'
+  role: 'PARENT' | 'TEACHER' | 'ADMIN'
 }
 export type AuthResponse = {
   accessToken: string
@@ -210,7 +210,14 @@ export type TodayPlan = {
 }
 export type AppNotification = {
   id: number
-  type: 'NEEDS_REVIEW' | 'NEW_COMMENT'
+  type:
+    | 'NEEDS_REVIEW'
+    | 'NEW_COMMENT'
+    | 'TEACHER_REPORT'
+    | 'CLASS_INVITATION'
+    | 'JOIN_REQUEST'
+    | 'HOMEWORK_ASSIGNED'
+    | 'HOMEWORK_GRADED'
   title: string
   message: string
   submissionId: number | null
@@ -234,4 +241,258 @@ export type SubmissionComment = {
   authorName: string
   content: string
   createdAt: string
+}
+export type EvaluationRating = 'HOAN_THANH_TOT' | 'HOAN_THANH' | 'CAN_CO_GANG'
+export type ClassroomSummary = {
+  id: number
+  name: string
+  schoolYear: string
+  gradeLevel: Grade
+  joinCode: string
+  studentCount: number
+  batchCount: number
+  createdAt: string
+}
+export type EnrollmentRow = {
+  id: number
+  studentId: number | null
+  displayName: string
+  birthYear: number | null
+  linkedParent: boolean
+  parentName: string | null
+  submissionCount: number
+  joinedAt: string
+}
+export type BatchSummary = {
+  id: number
+  classroomId: number
+  title: string
+  batchDate: string
+  notes: string | null
+  evaluatedCount: number
+  attentionCount: number
+  sentCount: number
+  totalStudents: number
+  createdAt: string
+}
+export type ClassroomDetail = {
+  classroom: ClassroomSummary
+  enrollments: EnrollmentRow[]
+  batches: BatchSummary[]
+}
+export type EvaluationRow = {
+  enrollmentId: number
+  studentId: number | null
+  displayName: string
+  birthYear: number | null
+  linkedParent: boolean
+  parentName: string | null
+  rating: EvaluationRating | null
+  teacherComment: string | null
+  needsAttention: boolean
+  imageUrl: string | null
+  sentToParentAt: string | null
+  updatedAt: string | null
+}
+export type BatchSheet = {
+  batchId: number
+  classroomId: number
+  classroomName: string
+  schoolYear: string
+  title: string
+  batchDate: string
+  notes: string | null
+  rows: EvaluationRow[]
+}
+export type SendReportsResponse = {
+  sentCount: number
+  skippedUnlinked: number
+  skippedEmpty: number
+}
+export type StudentClassroom = {
+  enrollmentId: number
+  classroomId: number
+  classroomName: string
+  schoolYear: string
+  gradeLevel: Grade
+  teacherName: string
+  joinedAt: string
+}
+export type ParentTeacherReport = {
+  evaluationId: number
+  batchId: number
+  batchTitle: string
+  batchDate: string
+  classroomName: string
+  teacherName: string
+  rating: EvaluationRating | null
+  teacherComment: string | null
+  needsAttention: boolean
+  sentToParentAt: string
+}
+
+
+export type EnrollmentDetail = {
+  id: number
+  studentId: number | null
+  displayName: string
+  birthYear: number | null
+  linkedParent: boolean
+  linkedParentName: string | null
+  linkedParentEmail: string | null
+  parentNameNote: string | null
+  parentPhone: string | null
+  teacherNote: string | null
+  joinedAt: string
+}
+export type ClassroomInvitation = {
+  id: number
+  classroomId: number
+  classroomName: string
+  schoolYear: string
+  gradeLevel: Grade
+  teacherName: string
+  parentEmail: string
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'CANCELLED'
+  createdAt: string
+  respondedAt: string | null
+}
+export type PublicClassroom = {
+  id: number
+  name: string
+  schoolYear: string
+  gradeLevel: Grade
+  teacherName: string
+  studentCount: number
+}
+export type ClassroomJoinRequest = {
+  id: number
+  classroomId: number
+  classroomName: string
+  teacherName: string
+  parentId: number
+  parentName: string
+  parentEmail: string
+  studentId: number
+  studentNickname: string
+  message: string | null
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  createdAt: string
+  reviewedAt: string | null
+}
+export type AdminTeacherDetail = {
+  teacherId: number
+  fullName: string
+  email: string
+  createdAt: string
+  classrooms: {
+    id: number
+    name: string
+    schoolYear: string
+    gradeLevel: Grade
+    joinCode: string
+    studentCount: number
+    batchCount: number
+    createdAt: string
+  }[]
+}
+export type HomeworkPage = {
+  id: number
+  pageNumber: number
+  originalFilename: string
+  contentType: string
+  fileSize: number
+  imageUrl: string
+  uploadedAt: string
+}
+export type HomeworkSubmissionRow = {
+  enrollmentId: number
+  studentId: number | null
+  displayName: string
+  linkedParent: boolean
+  parentName: string | null
+  parentEmail: string | null
+  parentPhone: string | null
+  evaluationId: number | null
+  submittedAt: string | null
+  late: boolean
+  pages: HomeworkPage[]
+  score: number | null
+  rating: EvaluationRating | null
+  gradingMode: 'MANUAL' | 'AI_ASSISTED'
+  teacherComment: string | null
+  needsAttention: boolean
+  sentToParentAt: string | null
+  scheduledSendAt: string | null
+}
+export type HomeworkDetail = {
+  batchId: number
+  classroomId: number
+  classroomName: string
+  gradeLevel: Grade
+  title: string
+  subject: Subject
+  homework: boolean
+  description: string | null
+  batchDate: string
+  dueAt: string | null
+  requiredPages: number
+  notes: string | null
+  rows: HomeworkSubmissionRow[]
+}
+export type ParentHomeworkItem = {
+  batchId: number
+  classroomId: number
+  classroomName: string
+  teacherName: string
+  enrollmentId: number
+  title: string
+  subject: Subject
+  description: string | null
+  batchDate: string
+  dueAt: string | null
+  requiredPages: number
+  submittedAt: string | null
+  late: boolean
+  pages: HomeworkPage[]
+  gradedPublished: boolean
+  score: number | null
+  rating: EvaluationRating | null
+  teacherComment: string | null
+  needsAttention: boolean
+  sentToParentAt: string | null
+}
+export type GradebookResponse = {
+  classroomId: number
+  classroomName: string
+  schoolYear: string
+  gradeLevel: Grade
+  batches: {
+    batchId: number
+    title: string
+    subject: Subject
+    homework: boolean
+    batchDate: string
+    dueAt: string | null
+  }[]
+  students: {
+    enrollmentId: number
+    studentId: number | null
+    displayName: string
+    linkedParent: boolean
+    parentName: string | null
+    parentPhone: string | null
+    averageScore: number | null
+    cells: {
+      batchId: number
+      submitted: boolean
+      pageCount: number
+      score: number | null
+      rating: EvaluationRating | null
+      teacherComment: string | null
+      needsAttention: boolean
+      sentToParentAt: string | null
+      scheduledSendAt: string | null
+    }[]
+  }[]
 }

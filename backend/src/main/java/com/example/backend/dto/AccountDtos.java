@@ -4,6 +4,7 @@ import com.example.backend.entity.User;
 import com.example.backend.entity.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public final class AccountDtos {
@@ -17,6 +18,18 @@ public final class AccountDtos {
     public record LoginRequest(
             @NotBlank @Email(message = "Email chưa đúng định dạng.") @Size(max = 255) String email,
             @NotBlank @Size(max = 72) String password) { }
+
+    public record AdminCreateUserRequest(
+            @NotBlank(message = "Vui lòng nhập email.") @Email(message = "Email chưa đúng định dạng.") @Size(max = 255) String email,
+            @NotBlank(message = "Vui lòng nhập mật khẩu.") @Size(min = 8, max = 72, message = "Mật khẩu cần từ 8 đến 72 ký tự.") String password,
+            @NotBlank(message = "Vui lòng nhập tên hiển thị.") @Size(max = 100) String fullName,
+            @NotNull(message = "Vui lòng chọn vai trò tài khoản.") UserRole role) { }
+
+    public record AdminUpdateUserRequest(
+            @NotBlank(message = "Vui lòng nhập email.") @Email(message = "Email chưa đúng định dạng.") @Size(max = 255) String email,
+            @NotBlank(message = "Vui lòng nhập tên hiển thị.") @Size(max = 100) String fullName,
+            @NotNull(message = "Vui lòng chọn vai trò tài khoản.") UserRole role,
+            @Size(max = 72, message = "Mật khẩu tối đa 72 ký tự.") String password) { }
 
     public record AccountResponse(Long id, String email, String fullName, UserRole role) {
         public static AccountResponse from(User user) {

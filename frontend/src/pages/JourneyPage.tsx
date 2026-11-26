@@ -2,10 +2,16 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useWorkspace } from '../context/workspace-context'
 import { useResource } from '../hooks/useResource'
-import type { HistoryPage, Attention } from '../api/types'
+import type { HistoryPage, Attention, ParentTeacherReport } from '../api/types'
 import { ErrorPanel, Loading } from '../components/Feedback'
 import { Icon } from '../components/Icons'
 import { Mascot } from '../components/Artwork'
+
+const RATING_LABELS: Record<string, string> = {
+  HOAN_THANH_TOT: 'Hoàn thành tốt',
+  HOAN_THANH: 'Hoàn thành',
+  CAN_CO_GANG: 'Cần cố gắng',
+}
 
 export function JourneyPage({ parent = false }: { parent?: boolean }) {
   const { students, selected, overview } = useWorkspace()
@@ -15,6 +21,9 @@ export function JourneyPage({ parent = false }: { parent?: boolean }) {
   )
   const attention = useResource<Attention[]>(
     selected ? `/students/${selected.id}/attention` : null,
+  )
+  const teacherReports = useResource<ParentTeacherReport[]>(
+    parent && selected ? `/students/${selected.id}/teacher-reports` : null,
   )
   if (students.loading) return <Loading />
   if (students.error)
@@ -61,6 +70,54 @@ export function JourneyPage({ parent = false }: { parent?: boolean }) {
           <Icon name="user" size={18} /> Đổi hồ sơ
         </Link>
       </div>
+      {parent && (
+        <section className="panel teacher-reports-panel">
+          <div className="small-heading">
+            <h3>Báo cáo từ giáo viên chủ nhiệm</h3>
+            <Link to="/ke-hoach" className="text-button">
+              Lập kế hoạch luyện thêm
+              <Icon name="arrow" size={16} />
+            </Link>
+          </div>
+          {teacherReports.loading ? (
+            <Loading message="Đang tải báo cáo của cô..." />
+          ) : teacherReports.error ? (
+            <ErrorPanel
+              message={teacherReports.error}
+              onRetry={teacherReports.reload}
+            />
+          ) : teacherReports.data?.length ? (
+            <div className="teacher-report-list">
+              {teacherReports.data.map((r) => (
+                <article key={r.evaluationId} className="teacher-report-item">
+                  <div className="teacher-report-head">
+                    <div>
+                      <strong>{r.batchTitle}</strong>
+                      <small>
+                        {r.classroomName} · {r.teacherName} · Ngày {r.batchDate}
+                      </small>
+                    </div>
+                    {r.rating && (
+                      <span
+                        className={`plan-status-badge ${r.rating === 'HOAN_THANH_TOT' ? 'active' : r.rating === 'CAN_CO_GANG' ? 'ended' : 'upcoming'}`}
+                      >
+                        {RATING_LABELS[r.rating] ?? r.rating}
+                      </span>
+                    )}
+                  </div>
+                  {r.teacherComment && <p>{r.teacherComment}</p>}
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="assessment-note">
+              Chưa có báo cáo từ giáo viên. Ba mẹ có thể vào{' '}
+              <Link to="/ho-so">Hồ sơ các bé</Link> để nhập mã mời lớp của cô
+              giáo nhé.
+            </p>
+          )}
+        </section>
+      )}
       <section className="panel attention-panel">
         <div className="small-heading">
           <h3>Ba mẹ cùng bé xem lại</h3>

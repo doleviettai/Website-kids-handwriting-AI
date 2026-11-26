@@ -53,6 +53,7 @@ public class StudentService {
         jdbc.update("DELETE FROM practice_plans WHERE student_id=?", id);
         jdbc.update("DELETE FROM student_goals WHERE student_id=?", id);
         jdbc.update("DELETE FROM notifications WHERE student_id=?", id);
+        jdbc.update("UPDATE classroom_enrollments SET student_id=NULL WHERE student_id=?", id);
         jdbc.update("DELETE FROM students WHERE id=?", id);
         entityManager.clear();
     }

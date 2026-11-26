@@ -1,8 +1,10 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.LearningDtos.*;
+import com.example.backend.dto.TeacherDtos.*;
 import com.example.backend.service.StudentService;
 import com.example.backend.service.StudentOverviewService;
+import com.example.backend.service.TeacherService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.List;
 public class StudentController {
     private final StudentService students;
     private final StudentOverviewService overview;
+    private final TeacherService teacherService;
 
     @GetMapping
     public List<StudentResponse> list(@AuthenticationPrincipal Jwt jwt) { return students.list(parent(jwt)); }
@@ -35,6 +38,22 @@ public class StudentController {
     @GetMapping("/{id}/submissions")
     public SubmissionPage submissions(@AuthenticationPrincipal Jwt jwt, @PathVariable long id, @RequestParam(defaultValue = "0") @Min(0) int page) {
         return overview.history(parent(jwt), id, page);
+    }
+
+    @GetMapping("/{id}/classrooms")
+    public List<StudentClassroomResponse> classrooms(@AuthenticationPrincipal Jwt jwt, @PathVariable long id) {
+        return teacherService.studentClassrooms(parent(jwt), id);
+    }
+
+    @PostMapping("/{id}/join-classroom")
+    @ResponseStatus(HttpStatus.CREATED)
+    public StudentClassroomResponse joinClassroom(@AuthenticationPrincipal Jwt jwt, @PathVariable long id, @Valid @RequestBody JoinClassroomRequest request) {
+        return teacherService.joinClassroom(parent(jwt), id, request);
+    }
+
+    @GetMapping("/{id}/teacher-reports")
+    public List<ParentTeacherReport> teacherReports(@AuthenticationPrincipal Jwt jwt, @PathVariable long id) {
+        return teacherService.studentTeacherReports(parent(jwt), id);
     }
 
     private long parent(Jwt jwt) { return Long.parseLong(jwt.getSubject()); }

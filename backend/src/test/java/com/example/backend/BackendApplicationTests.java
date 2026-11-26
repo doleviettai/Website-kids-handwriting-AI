@@ -47,7 +47,7 @@ class BackendApplicationTests {
     @Test
     void migrationsSeedVietnameseContentAndBCryptAdminWithoutRunningModels() {
         assertThat(flyway.info().pending()).isEmpty();
-        assertThat(flyway.info().applied()).hasSize(3);
+        assertThat(flyway.info().applied()).hasSize(7);
         // Lessons and items are editable, including deletion with their history.
         // The health endpoint must reflect current data, not the original seed counts.
         assertThat(health.check().learningContent().get("lessons")).isEqualTo(lessons.count());

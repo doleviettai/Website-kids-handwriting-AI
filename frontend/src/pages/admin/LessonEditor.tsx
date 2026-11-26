@@ -75,6 +75,10 @@ export function LessonEditor({
             >
               <option value="MAU_GIAO">Mẫu giáo</option>
               <option value="LOP_1">Lớp 1</option>
+              <option value="LOP_2">Lớp 2</option>
+              <option value="LOP_3">Lớp 3</option>
+              <option value="LOP_4">Lớp 4</option>
+              <option value="LOP_5">Lớp 5</option>
             </select>
           </label>
           <label>

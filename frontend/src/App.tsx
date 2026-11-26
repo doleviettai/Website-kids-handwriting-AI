@@ -32,9 +32,18 @@ import { AdminErrorsPage } from './pages/admin/AdminErrorsPage'
 import { PracticePage } from './pages/PracticePage'
 import { SubmissionDetailPage } from './pages/SubmissionDetailPage'
 import { AdminReviewsPage } from './pages/admin/AdminReviewsPage'
+import { NotificationsPage } from './pages/NotificationsPage'
+import { PlanPage } from './pages/PlanPage'
+import { TeacherClassesPage } from './pages/teacher/TeacherClassesPage'
+import { TeacherClassroomPage } from './pages/teacher/TeacherClassroomPage'
+import { TeacherBatchPage } from './pages/teacher/TeacherBatchPage'
+import { TeacherHomeworkPage } from './pages/teacher/TeacherHomeworkPage'
+import { TeacherGradebookPage } from './pages/teacher/TeacherGradebookPage'
+import { ParentClassroomPage } from './pages/ParentClassroomPage'
+import { NotificationBell } from './components/NotificationBell'
+import { NotificationContext } from './context/notification-context'
+import { useNotifications } from './hooks/useNotifications'
 import { gradeLabels } from './data'
-import { useResource } from './hooks/useResource'
-import type { Attention, ReviewPage } from './api/types'
 import './App.css'
 import './ConnectedApp.css'
 
@@ -74,17 +83,21 @@ function RolePage({
   role,
   children,
 }: {
-  role: 'PARENT' | 'ADMIN'
+  role: 'PARENT' | 'TEACHER' | 'ADMIN'
   children: ReactNode
 }) {
   const { user } = useAuth()
+  const label =
+    role === 'ADMIN'
+      ? 'quản trị viên'
+      : role === 'TEACHER'
+        ? 'giáo viên chủ nhiệm'
+        : 'phụ huynh'
   if (user?.role !== role)
     return (
       <div className="empty-state panel">
         <Icon name="shield" size={42} />
-        <h2>
-          Trang này dành cho {role === 'ADMIN' ? 'quản trị viên' : 'phụ huynh'}
-        </h2>
+        <h2>Trang này dành cho {label}</h2>
         <Link className="soft-button" to="/">
           Về không gian của bạn
           <Icon name="arrow" size={18} />
@@ -95,11 +108,10 @@ function RolePage({
 }
 
 function HomeRoute() {
-  return useAuth().user?.role === 'ADMIN' ? (
-    <Navigate to="/quan-tri" replace />
-  ) : (
-    <DashboardPage />
-  )
+  const role = useAuth().user?.role
+  if (role === 'ADMIN') return <Navigate to="/quan-tri" replace />
+  if (role === 'TEACHER') return <Navigate to="/giao-vien" replace />
+  return <DashboardPage />
 }
 function HistoryRoute({ parent = false }: { parent?: boolean }) {
   const { selected } = useWorkspace()
@@ -128,17 +140,8 @@ function NotFound() {
 function Shell() {
   const { pathname } = useLocation(),
     auth = useAuth()
-  const { students, selected, choose, overview } = useWorkspace()
-  const notices = useResource<Attention[]>(
-    selected ? `/students/${selected.id}/attention` : null,
-    String(overview.data?.submissions ?? ''),
-  )
-  const adminNotices = useResource<ReviewPage>(
-    auth.user?.role === 'ADMIN'
-      ? '/admin/reviews?onlyErrors=true&page=0'
-      : null,
-    pathname,
-  )
+  const { students, selected, choose } = useWorkspace()
+  const notificationState = useNotifications(Boolean(auth.user), pathname)
   const [menuOpen, setMenuOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
@@ -170,6 +173,7 @@ function Shell() {
     return () => window.removeEventListener('netxinh:preferences', sync)
   }, [])
   const admin = auth.user?.role === 'ADMIN'
+  const teacher = auth.user?.role === 'TEACHER'
   const links = admin
     ? [
         {
@@ -209,13 +213,46 @@ function Shell() {
           end: false,
         },
       ]
-    : [
+    : teacher
+      ? [
+          {
+            to: '/giao-vien',
+            icon: 'user',
+            label: 'Lớp học của cô',
+            end: false,
+          },
+          {
+            to: '/thong-bao',
+            icon: 'bell',
+            label: 'Thông báo',
+            end: false,
+          },
+          {
+            to: '/bai-hoc',
+            icon: 'book',
+            label: 'Thư viện nội dung',
+            end: false,
+          },
+        ]
+      : [
         { to: '/', icon: 'home', label: 'Góc học tập', end: true },
         { to: '/bai-hoc', icon: 'book', label: 'Bài học của bé', end: false },
         {
           to: '/luyen-tap/chu-don',
           icon: 'pen',
           label: 'Góc luyện viết',
+          end: false,
+        },
+        {
+          to: '/ke-hoach',
+          icon: 'calendar',
+          label: 'Kế hoạch luyện tập',
+          end: false,
+        },
+        {
+          to: '/lop-hoc',
+          icon: 'layers',
+          label: 'Lớp học & Bài tập',
           end: false,
         },
         { to: '/ho-so', icon: 'user', label: 'Hồ sơ các bé', end: false },
@@ -243,7 +280,8 @@ function Shell() {
     }
   }
   return (
-    <div className={`app-shell ${paused ? 'motion-paused' : ''}`}>
+    <NotificationContext.Provider value={notificationState}>
+      <div className={`app-shell ${paused ? 'motion-paused' : ''}`}>
       <a href="#main-content" className="skip-link">
         Đến nội dung chính
       </a>
@@ -273,19 +311,23 @@ function Shell() {
             <strong>
               {admin
                 ? 'Quản trị viên'
-                : selected
-                  ? `Bé ${selected.nickname}`
-                  : 'Gia đình của bé'}
+                : teacher
+                  ? auth.user?.fullName || 'Giáo viên'
+                  : selected
+                    ? `Bé ${selected.nickname}`
+                    : 'Gia đình của bé'}
             </strong>
             <span>
               {admin
                 ? 'NétXinh'
-                : selected
-                  ? gradeLabels[selected.gradeLevel]
-                  : 'Chưa chọn hồ sơ'}
+                : teacher
+                  ? 'Giáo viên chủ nhiệm'
+                  : selected
+                    ? gradeLabels[selected.gradeLevel]
+                    : 'Chưa chọn hồ sơ'}
             </span>
           </div>
-          {!admin && (
+          {!admin && !teacher && (
             <Link
               to="/ho-so"
               className="profile-edit"
@@ -296,7 +338,11 @@ function Shell() {
           )}
         </div>
         <span className="nav-label">
-          {admin ? 'QUẢN LÝ HỆ THỐNG' : 'THẾ GIỚI CỦA BÉ'}
+          {admin
+            ? 'QUẢN LÝ HỆ THỐNG'
+            : teacher
+              ? 'QUẢN LÝ LỚP HỌC'
+              : 'THẾ GIỚI CỦA BÉ'}
         </span>
         <nav className="main-nav" aria-label="Điều hướng chính">
           {links.map((item) => (
@@ -330,7 +376,7 @@ function Shell() {
           </button>
         </div>
         <div className="sidebar-bottom">
-          {!admin && (
+          {!admin && !teacher && (
             <NavLink to="/phu-huynh" onClick={() => setMenuOpen(false)}>
               <Icon name="heart" size={20} /> Góc ba mẹ
               <Icon name="chevron" size={14} />
@@ -379,13 +425,17 @@ function Shell() {
               <Icon name="menu" />
             </button>
             <span className="topbar-breadcrumb">
-              {admin ? 'Quản trị' : 'Không gian gia đình'}
+              {admin
+                ? 'Quản trị'
+                : teacher
+                  ? 'Giáo viên chủ nhiệm'
+                  : 'Không gian gia đình'}
               <Icon name="chevron" size={13} />
               <strong>{auth.user?.fullName || 'NétXinh'}</strong>
             </span>
           </div>
           <div className="topbar-actions">
-            {!admin && (students.data?.length ?? 0) > 0 && (
+            {!admin && !teacher && (students.data?.length ?? 0) > 0 && (
               <label className="header-student-select">
                 <Icon name="user" size={17} />
                 <select
@@ -409,19 +459,7 @@ function Shell() {
             >
               <Icon name="help" size={21} />
             </button>
-            <Link
-              className="icon-button"
-              to={admin ? '/quan-tri/bai-viet' : '/phu-huynh'}
-              aria-label="Thông báo bài viết"
-              title="Điểm cần cùng bé xem lại"
-            >
-              <Icon name="bell" size={21} />
-              {(admin
-                ? (adminNotices.data?.totalElements ?? 0) > 0
-                : (notices.data?.length ?? 0) > 0) && (
-                <span className="notification-dot" />
-              )}
-            </Link>
+            <NotificationBell />
             <span className="topbar-divider" />
             <Link
               to="/cai-dat"
@@ -431,7 +469,9 @@ function Shell() {
               <div className="avatar small">
                 <Mascot />
               </div>
-              <strong>{admin ? 'Admin' : 'Ba mẹ'}</strong>
+              <strong>
+                {admin ? 'Admin' : teacher ? 'Giáo viên' : 'Ba mẹ'}
+              </strong>
             </Link>
           </div>
         </header>
@@ -471,7 +511,8 @@ function Shell() {
           </button>
         </Modal>
       )}
-    </div>
+      </div>
+    </NotificationContext.Provider>
   )
 }
 
@@ -559,6 +600,63 @@ export default function App() {
               }
             />
             <Route path="/cai-dat" element={<SettingsPage />} />
+            <Route path="/thong-bao" element={<NotificationsPage />} />
+            <Route
+              path="/ke-hoach"
+              element={
+                <RolePage role="PARENT">
+                  <PlanPage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/lop-hoc"
+              element={
+                <RolePage role="PARENT">
+                  <ParentClassroomPage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/giao-vien"
+              element={
+                <RolePage role="TEACHER">
+                  <TeacherClassesPage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/giao-vien/lop/:classroomId"
+              element={
+                <RolePage role="TEACHER">
+                  <TeacherClassroomPage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/giao-vien/lop/:classroomId/bang-diem"
+              element={
+                <RolePage role="TEACHER">
+                  <TeacherGradebookPage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/giao-vien/bai-tap/:batchId"
+              element={
+                <RolePage role="TEACHER">
+                  <TeacherHomeworkPage />
+                </RolePage>
+              }
+            />
+            <Route
+              path="/giao-vien/dot-cham/:batchId"
+              element={
+                <RolePage role="TEACHER">
+                  <TeacherBatchPage />
+                </RolePage>
+              }
+            />
             <Route
               path="/quan-tri/bai-hoc"
               element={

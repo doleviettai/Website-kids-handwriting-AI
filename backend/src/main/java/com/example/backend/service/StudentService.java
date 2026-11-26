@@ -5,6 +5,7 @@ import com.example.backend.entity.Student;
 import com.example.backend.exception.ApiException;
 import com.example.backend.repository.*;
 import com.example.backend.util.VietnameseText;
+import jakarta.persistence.EntityManager;
 import java.time.Year;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class StudentService {
     private final StudentRepository students;
     private final UserRepository users;
     private final JdbcTemplate jdbc;
+    private final EntityManager entityManager;
 
     @Transactional(readOnly = true)
     public List<StudentResponse> list(long parentId) {
@@ -46,8 +48,14 @@ public class StudentService {
         Long progress = jdbc.queryForObject("SELECT COUNT(*) FROM student_progress WHERE student_id=?", Long.class, id);
         if (history > 0 || progress > 0)
             throw new ApiException(HttpStatus.CONFLICT, "Hồ sơ đã có lịch sử học. Ba mẹ có thể chỉnh sửa để giữ lại quá trình của bé.");
-        students.delete(student);
-        students.flush();
+        entityManager.flush();
+        jdbc.update("DELETE pi FROM practice_plan_items pi JOIN practice_plans p ON p.id=pi.plan_id WHERE p.student_id=?", id);
+        jdbc.update("DELETE FROM practice_plans WHERE student_id=?", id);
+        jdbc.update("DELETE FROM student_goals WHERE student_id=?", id);
+        jdbc.update("DELETE FROM notifications WHERE student_id=?", id);
+        jdbc.update("UPDATE classroom_enrollments SET student_id=NULL WHERE student_id=?", id);
+        jdbc.update("DELETE FROM students WHERE id=?", id);
+        entityManager.clear();
     }
 
     @Transactional(readOnly = true)

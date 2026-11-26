@@ -1,6 +1,82 @@
 # Trạng thái và bàn giao
 
-Cập nhật: 25/11/2026. Yêu cầu mới nhất: ADMIN xóa bài học thì xóa cả nội dung và lịch sử liên quan; đã xóa thật bài 1 theo yêu cầu. Phần sửa model/canvas trước đó được giữ nguyên.
+Cập nhật: 26/11/2026. Yêu cầu mới nhất: hoàn thành **Pha 1 + Pha 2 mở rộng lớp học, bài tập về nhà (Toán & Tiếng Việt), nộp ảnh vở nhiều trang, chấm điểm thủ công + hẹn giờ gửi điểm, sổ điểm giáo viên, tìm/xin vào lớp & mời phụ huynh, và Admin xem lớp giáo viên dạy** (migration `V6`, mở rộng cấp học Mẫu giáo → Lớp 5). Pha 3 (nút "Chấm nhanh AI" gọi model V5+Kids sau khi train xong trên Colab) đã chừa sẵn trạng thái chờ tích hợp trên UI và DB (`grading_mode`, `ai_metrics_json`).
+
+## Lớp học, Bài tập về nhà, Sổ điểm & Luồng Phụ huynh–Giáo viên (Pha 1 + Pha 2) — 26/11/2026
+
+- **Database (V6 & V7)**:
+  - `V6__Homework_grades_and_classroom_workflow.sql`: mở rộng cấp học `MAU_GIAO..LOP_5`, loại thông báo, ghi chú phụ huynh trong lớp, bài tập về nhà Toán/Tiếng Việt, điểm số & hẹn giờ gửi, và 3 bảng mới (`classroom_invitations`, `classroom_join_requests`, `homework_submission_pages`).
+  - `V7__Seed_demo_teachers_classrooms_and_parents.sql`: dữ liệu khởi tạo mẫu tự chạy khi clone về chạy backend lần đầu (5 giáo viên `gv01..gv05@netxinh.local`, 5 lớp Tiếng Việt gồm 3 Mầm non + 2 Lớp 1, 50 phụ huynh `ph01..ph50@netxinh.local`, 67 học sinh phân bổ 1/2/3 con mỗi phụ huynh đã liên kết đầy đủ vào 5 lớp, 5 bài tập về nhà Tiếng Việt và điểm mẫu).
+  - Ràng buộc khi giáo viên thêm 1 học sinh hoặc nhập CSV: bắt buộc nhập `parentEmail` thuộc tài khoản `PARENT` hợp lệ để tự động liên kết/tạo hồ sơ bé cho phụ huynh đó.
+  - Kiểm tra: `.\gradlew.bat test` với JDK 21 trên MySQL thật **BUILD SUCCESSFUL** (Flyway `V1 → V7` đạt).
+  - Mở rộng `grade_level` ở `students`, `lessons`, `classrooms` sang 6 cấp: `MAU_GIAO`, `LOP_1`, `LOP_2`, `LOP_3`, `LOP_4`, `LOP_5`.
+  - Mở rộng `notifications.type` thêm `HOMEWORK_ASSIGNED`, `HOMEWORK_SUBMITTED`, `CLASSROOM_INVITE`, `JOIN_REQUEST`.
+  - Mở rộng `classroom_enrollments` thêm `parent_name_note`, `parent_phone`, `teacher_note` (ghi chú riêng trong lớp, không sửa dữ liệu gốc `users`/`students`).
+  - Mở rộng `review_batches` thêm `subject` (`TIENG_VIET` / `TOAN`), `description`, `due_at`, `required_pages`, `is_homework`.
+  - Mở rộng `student_evaluations` thêm `score` (`DECIMAL(4,2)`), `grading_mode` (`MANUAL` / `AI_ASSISTED`), `submitted_at`, `scheduled_send_at`, `graded_at`.
+  - Tạo 3 bảng mới: `classroom_invitations`, `classroom_join_requests`, `homework_submission_pages`. Cập nhật `database.dbml`.
+- **Backend**:
+  - Bật `@EnableScheduling` (`BackendApplication.java`), cấu hình multipart `10MB`/`50MB` (`application.yaml`), bổ sung quyền `/api/parent/**` cho `PARENT` (`SecurityConfig.java`).
+  - `ClassroomWorkflowService` & `HomeworkController`:
+    - Giáo viên sửa thông tin học sinh/phụ huynh trong lớp (`PUT /api/teacher/classrooms/{id}/enrollments/{enrollmentId}`), mời phụ huynh qua email (`POST/GET/DELETE /api/teacher/classrooms/{id}/invitations`), duyệt/từ chối yêu cầu xin vào lớp (`GET/POST /api/teacher/classrooms/{id}/join-requests`).
+    - Phụ huynh tìm kiếm lớp công khai theo tên/cấp học (`GET /api/parent/classrooms/search`), gửi yêu cầu xin vào lớp (`POST /api/parent/classrooms/{id}/join-requests`), xem và chấp nhận/từ chối lời mời (`GET/POST /api/parent/invitations`), xem danh sách bài tập (`GET /api/parent/homework`), nộp nhiều ảnh vở JPG/PNG (`POST /api/parent/homework/{batchId}/submit`, tối đa 10 trang/bài, lưu đĩa cục bộ `uploads/homework/` và phục vụ qua `GET /api/homework/pages/{pageId}/image` có kiểm tra JWT + quyền sở hữu).
+  - `HomeworkService` & `HomeworkPublishScheduler`:
+    - Giáo viên giao bài tập (`POST /api/teacher/classrooms/{id}/homework`, tự tạo đánh giá trống cho cả lớp và gửi thông báo `HOMEWORK_ASSIGNED` cho phụ huynh đã liên kết), xem bài nộp & ảnh vở, chấm điểm 0–10 + xếp loại + nhận xét với lựa chọn gửi ngay hoặc hẹn giờ (`scheduledSendAt`), và xem bảng sổ điểm theo môn (`GET /api/teacher/classrooms/{id}/gradebook?subject=`).
+    - `HomeworkPublishScheduler`: tác vụ nền chạy mỗi 60 giây tự động công bố các bài chấm đã đến `scheduled_send_at` và gửi thông báo `TEACHER_REPORT` cho phụ huynh.
+  - `AdminOverviewController`: thêm `GET /api/admin/teachers/{id}/classrooms` để ADMIN xem hồ sơ giáo viên và danh sách lớp phụ trách.
+  - `TeacherService`: cập nhật xóa lớp và xóa đợt chấm để dọn sạch `homework_submission_pages`, `classroom_invitations`, `classroom_join_requests` theo đúng thứ tự khóa ngoại trong transaction.
+  - Kiểm tra: `$env:JAVA_HOME='C:\Program Files\Eclipse Adoptium\jdk-21.0.13.10002-hotspot'; .\gradlew.bat test bootJar` với MySQL thật **đạt toàn bộ test Java** (gồm `HomeworkApiTests` mới + các bộ test cũ, Flyway `V1 → V6` và Hibernate `validate` thành công).
+- **Frontend**:
+  - Cập nhật `Grade` (`MAU_GIAO..LOP_5`) và `Subject` (`TIENG_VIET`, `TOAN`) trên các màn hình hồ sơ bé, bài học admin, lớp học giáo viên.
+  - `AuthImage.tsx`: tải ảnh trang bài tập bảo vệ bằng Bearer JWT.
+  - Giáo viên: nâng cấp `TeacherClassroomPage.tsx` (3 tab Học sinh / Bài tập / Mời & Duyệt, modal sửa ghi chú học sinh-phụ huynh, giao bài tập về nhà), thêm `TeacherHomeworkPage.tsx` (`/giao-vien/bai-tap/:batchId`, xem ảnh vở từng trang, chấm điểm + hẹn giờ gửi + nút Chấm nhanh AI chờ Pha 3), thêm `TeacherGradebookPage.tsx` (`/giao-vien/lop/:classroomId/bang-diem`, ma trận điểm lọc theo môn Toán/Tiếng Việt).
+  - Phụ huynh: thêm `ParentClassroomPage.tsx` (`/lop-hoc`, tìm lớp & xin vào lớp, chấp nhận lời mời, xem bài tập về nhà, chụp/chọn nhiều trang ảnh nộp bài, xem điểm & nhận xét cô giáo); cập nhật chuông và trang thông báo cho 4 loại thông báo mới.
+  - Admin (`/quan-tri`): thêm nút & modal **Xem lớp dạy** cho từng tài khoản `TEACHER`.
+  - Kiểm tra: `npm run build` (`tsc -b && vite build`) và `npm run lint` đạt (0 lỗi, 0 cảnh báo). Chưa chạy E2E Playwright cho luồng bài tập/lớp học mới.
+
+## Quản lý người dùng cho ADMIN (`PARENT` & `TEACHER`) — 26/11/2026
+
+- **Backend**:
+  - `AdminUserService` & `AdminOverviewController`:
+    - `GET /api/admin/users?page=0&role=&q=`: phân trang, lọc theo vai trò (`PARENT` / `TEACHER` / `ADMIN`) và tìm kiếm theo tên/email (`UserRepository.searchUsers`).
+    - `POST /api/admin/users`: tạo tài khoản `PARENT` hoặc `TEACHER` (chặn tạo `ADMIN` 400, chặn trùng email 409). Giữ nguyên `POST /api/admin/teachers` để tương thích ngược.
+    - `PUT /api/admin/users/{id}`: sửa tên hiển thị, email, vai trò (`PARENT` ↔ `TEACHER`) và tùy chọn đổi mật khẩu; chặn sửa `ADMIN` (403), chặn nâng lên `ADMIN` (400), chặn đổi `PARENT → TEACHER` nếu đang có hồ sơ bé (409) và chặn đổi `TEACHER → PARENT` nếu đang phụ trách lớp học (409).
+    - `DELETE /api/admin/users/{id}`: chặn tự xóa hoặc xóa `ADMIN` (403); xóa vĩnh viễn theo thứ tự khóa ngoại trong 1 `@Transactional` (xóa lớp học/đợt chấm/đánh giá của giáo viên; xóa thông báo/nhận xét/lỗi/tiến độ/bài viết/kế hoạch/mục tiêu/hồ sơ bé của phụ huynh, đồng thời đặt `classroom_enrollments.student_id = NULL` để giữ danh sách lớp của giáo viên).
+  - Kiểm tra: `.\gradlew.bat test bootJar` với JDK 21 trên MySQL thật **đạt 31/31 test Java** (gồm `AdminUserApiTests` mới + 29 test cũ).
+- **Frontend (`/quan-tri`)**:
+  - Nâng cấp bảng **Quản lý tài khoản** trong `AdminPage.tsx`: tab lọc vai trò (`Tất cả` / `Phụ huynh` / `Giáo viên` / `Quản trị viên`), ô tìm kiếm tên/email, nút **Thêm tài khoản**, nút **Sửa** / **Xóa** trên từng dòng `PARENT`/`TEACHER` (dòng `ADMIN` hiển thị nhãn `Được bảo vệ`), modal tạo/sửa chung và hộp xác nhận xóa vĩnh viễn.
+  - Kiểm tra: `npm run build` (`tsc -b && vite build`) và `npm run lint` đạt (0 lỗi, 0 cảnh báo). Chưa chạy E2E Playwright cho màn hình này.
+
+## Vai trò Giáo viên chủ nhiệm (`TEACHER`) — 26/11/2026
+
+- **Database (V5)**: tạo `V5__Teacher_classrooms_and_reports.sql` bổ sung `TEACHER` vào `users.role`, `TEACHER_REPORT` vào `notifications.type`, và 4 bảng `classrooms`, `classroom_enrollments`, `review_batches`, `student_evaluations` (có sẵn `image_url`, `ai_metrics_json` cho model V5+Kids sau này). Cập nhật `database.dbml`.
+- **Backend**:
+  - `POST /api/admin/teachers`: ADMIN tạo tài khoản `TEACHER`; `/dang-ky` vẫn chỉ tạo `PARENT`.
+  - `TeacherController` / `TeacherService` (`/api/teacher/**`, chỉ `TEACHER` sở hữu lớp): CRUD lớp kèm mã mời 8 ký tự, thêm/nhập hàng loạt học sinh (tối đa 100 em), tạo/xóa đợt chấm, bảng đánh giá cả lớp (`HOAN_THANH_TOT` / `HOAN_THANH` / `CAN_CO_GANG`, cờ `needsAttention`, nhận xét), xuất CSV UTF-8 BOM mở thẳng trong Excel (`/export.csv`), gửi báo cáo tạo thông báo `TEACHER_REPORT` cho phụ huynh đã liên kết.
+  - `StudentController`: `POST /api/students/{id}/join-classroom`, `GET /api/students/{id}/classrooms`, `GET /api/students/{id}/teacher-reports` (chỉ PARENT sở hữu hồ sơ).
+  - Kiểm tra: `.\gradlew.bat test bootJar` **đạt 29/29 test Java** (gồm `TeacherApiTests` + 28 test cũ) trên MySQL thật.
+- **Frontend**:
+  - Các trang giáo viên `/giao-vien`, `/giao-vien/lop/:classroomId`, `/giao-vien/dot-cham/:batchId` (bảng chấm kiểu Excel, lọc cần chú ý/chưa chấm, xuất `.csv`, in phiếu `@media print`, gửi báo cáo).
+  - Admin (`/quan-tri`): nút & modal tạo tài khoản giáo viên.
+  - Phụ huynh: nhập mã lớp cô giáo ở `/ho-so`, xem báo cáo cô ở `/phu-huynh` và mở thẳng từ thông báo `TEACHER_REPORT`.
+
+## Mục tiêu hằng ngày, Kế hoạch luyện tập & Thông báo đã đọc — 25/11/2026
+
+- **Database (V4)**: thêm migration `V4__Goals_plans_notifications.sql` với 5 bảng `student_goals`, `practice_plans`, `practice_plan_items`, `submission_comments`, `notifications`; đã cập nhật `project-memory/database.dbml`. Không sửa V1/V2/V3 hay 9 bảng gốc.
+- **Backend**:
+  - `PlanningController` / `PlanningService`: CRUD mục tiêu hằng ngày (`/api/students/{id}/goal`, 1–30 bài/ngày), CRUD kế hoạch luyện tập (`/api/students/{id}/plans`, khoảng ngày ≤ 31 ngày, mỗi nội dung 1–10 lượt/ngày), và `/api/students/{id}/today` (đếm bài theo ngày `Asia/Ho_Chi_Minh`, gộp lượt nếu nhiều kế hoạch trùng nội dung).
+  - `NotificationController` / `NotificationService` / `CommentService`: lưu thông báo trong DB (`NEEDS_REVIEW` khi có `LOW_CONFIDENCE`/`WRONG_TEXT` cho PARENT chủ bài và từng ADMIN trong cùng transaction lưu bài; `NEW_COMMENT` khi ADMIN gửi nhận xét ở `/api/admin/submissions/{id}/comments`). Có API đếm chưa đọc, danh sách phân trang/lọc chưa đọc, đánh dấu đã đọc từng mục hoặc tất cả.
+  - Cascade xóa: `AdminContentService.deleteLesson` xóa kèm `notifications`, `submission_comments`, `practice_plan_items`; `deleteItem` xóa kèm `practice_plan_items`; `StudentService.delete` (hồ sơ chưa có lịch sử) xóa kèm mục tiêu, kế hoạch và thông báo theo bé.
+  - Test Java mới: `PlanningApiTests`, `NotificationApiTests`.
+- **Frontend**:
+  - Trang `/ke-hoach` (`PlanPage`): đặt/tắt mục tiêu hằng ngày, CRUD kế hoạch luyện tập chọn từ thư viện.
+  - Dashboard (`DashboardPage`) & Luyện viết (`PracticePage`): `DailyGoal` (thanh tiến độ + lời chúc Pip khi đạt mục tiêu), `TodayPlanSection` (“Bài hôm nay” mở thẳng canvas luyện viết kèm nút “Bài tiếp theo hôm nay”).
+  - Chuông header (`NotificationBell` popover + badge số chưa đọc, polling 60s + focus + đổi trang) và trang `/thong-bao` (`NotificationsPage`).
+  - Trang chi tiết bài viết (`SubmissionDetailPage`): danh sách nhận xét và form gửi nhận xét cho ADMIN.
+- **Kiểm tra đã chạy**:
+  - Backend: `.\gradlew.bat test bootJar` với JDK 21 và MySQL thật `kids_handwriting` — **28/28 test Java đạt** (gồm 22 test cũ + `PlanningApiTests` + `NotificationApiTests`), Flyway `V1 → V4` và Hibernate `validate` thành công. Hỗ trợ thêm cấu hình local dạng `backend/config/local.yaml` (được Git bỏ qua, có `local.yaml.example`).
+  - Frontend: `npm run build` (`tsc -b && vite build`) và `npm run lint` đạt (0 lỗi, 0 cảnh báo).
+  - Chưa chạy E2E Playwright full-stack trên máy này.
 
 ## Xóa bài học kèm lịch sử — 25/11/2026
 

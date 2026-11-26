@@ -38,6 +38,8 @@ out/
 
 # Local credentials, uploads and runtime logs
 /config/local.properties
+/config/local.yaml
+/config/local.yml
 /.env
 /uploads/
 /logs/

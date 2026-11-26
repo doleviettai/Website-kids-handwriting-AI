@@ -35,6 +35,20 @@ public class AccountService {
         return response(user);
     }
 
+    @Transactional
+    public AccountResponse createTeacher(RegisterRequest request) {
+        String email = normalizeEmail(request.email());
+        if (users.existsByEmail(email)) throw new ApiException(HttpStatus.CONFLICT, "Email này đã tồn tại trong hệ thống.");
+        if (request.password().getBytes(StandardCharsets.UTF_8).length > 72)
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Mật khẩu tối đa 72 byte.");
+        User user = new User();
+        user.setEmail(email);
+        user.setFullName(VietnameseText.nfc(request.fullName()).trim());
+        user.setPasswordHash(passwords.encode(request.password()));
+        user.setRole(UserRole.TEACHER);
+        return AccountResponse.from(users.saveAndFlush(user));
+    }
+
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         if (request.password().getBytes(StandardCharsets.UTF_8).length > 72)

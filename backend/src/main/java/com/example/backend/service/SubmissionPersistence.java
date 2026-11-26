@@ -26,6 +26,7 @@ public class SubmissionPersistence {
     private final ErrorTypeRepository errorTypes;
     private final StudentProgressRepository progress;
     private final ScoringProperties scoring;
+    private final NotificationService notifications;
 
     public record Prepared(AiRequest request,Integer modelId,String modelPath) { }
     @Transactional(readOnly=true)
@@ -75,6 +76,8 @@ public class SubmissionPersistence {
         p.setLastAttemptAt(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
         // Recognition-only scores do not establish handwriting mastery.
         p.setIsMastered(Boolean.TRUE.equals(p.getIsMastered()) || (totalWeight>0 && total>=80 && p.getAttempts()>=3 && result.confidence().compareTo(new BigDecimal("0.65"))>=0 && s.getIsCorrect()));
-        progress.save(p);return s.getId();
+        progress.save(p);
+        notifications.notifyNeedsReview(s, types.stream().map(ErrorType::getCode).collect(java.util.stream.Collectors.toSet()));
+        return s.getId();
     }
 }

@@ -5,6 +5,8 @@ spring:
     import:
       - optional:file:./config/local.properties
       - optional:file:./backend/config/local.properties
+      - optional:file:./config/local.yaml
+      - optional:file:./backend/config/local.yaml
   datasource:
     url: jdbc:mysql://${DB_HOST:${db.host:127.0.0.1}}:${DB_PORT:${db.port:3306}}/${DB_NAME:${db.name:kids_handwriting}}?useUnicode=true&characterEncoding=UTF-8&connectionTimeZone=Asia/Ho_Chi_Minh
     username: ${DB_USERNAME:${db.username:root}}
@@ -26,6 +28,10 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: false
     clean-disabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
 
 server:
   port: ${SERVER_PORT:8080}

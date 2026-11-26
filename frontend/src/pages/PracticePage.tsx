@@ -4,17 +4,21 @@ import type {
   AiStatus,
   Recognition,
   SubmissionDetail,
+  TodayPlan,
   WritingItem,
   WritingTemplate,
 } from '../api/types'
 import { api, apiError } from '../api/client'
 import { useWorkspace } from '../context/workspace-context'
+import { useNotificationContext } from '../context/notification-context'
 import { useResource } from '../hooks/useResource'
 import { useRecognition } from '../hooks/useRecognition'
 import { modelTaskFor } from '../types'
 import { DrawingCanvas } from '../components/DrawingCanvas'
 import { SubmissionResult } from '../components/SubmissionResult'
 import { RecognitionPreview } from '../components/RecognitionPreview'
+import { DailyGoal } from '../components/DailyGoal'
+import { practiceLinkForToday } from '../utils/practiceLinks'
 import { ErrorPanel, Loading } from '../components/Feedback'
 import { Icon } from '../components/Icons'
 
@@ -39,6 +43,9 @@ type SessionProps = Exercise & {
   nickname: string
   ready: boolean
   choices: Exercise[]
+  fromToday: boolean
+  today: TodayPlan | null
+  reloadToday: () => void
 }
 
 export function PracticePage() {
@@ -46,7 +53,11 @@ export function PracticePage() {
   const { lessonId, practiceKind } = useParams(),
     [query] = useSearchParams()
   const { lessons, students, selected } = useWorkspace(),
-    status = useResource<AiStatus>('/ai/status')
+    status = useResource<AiStatus>('/ai/status'),
+    today = useResource<TodayPlan>(
+      selected ? `/students/${selected.id}/today` : null,
+      String(selected?.id ?? ''),
+    )
   if (students.loading || lessons.loading) return <Loading />
   if (students.error || lessons.error)
     return (
@@ -98,6 +109,9 @@ export function PracticePage() {
     nickname: selected.nickname,
     ready,
     choices: all.filter((e) => modelTaskFor(e.item.itemType) === task),
+    fromToday: query.get('from') === 'today',
+    today: today.data,
+    reloadToday: today.reload,
   }
   return (
     <div className="page-enter practice-connected">
@@ -168,6 +182,7 @@ export function PracticePage() {
 
 function useSavedSubmission(props: SessionProps) {
   const { overview } = useWorkspace()
+  const { refresh: refreshNotifications } = useNotificationContext()
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [result, setResult] = useState<SubmissionDetail | null>(null)
@@ -212,6 +227,8 @@ function useSavedSubmission(props: SessionProps) {
       if (mounted.current) {
         setResult(response.data)
         overview.reload()
+        props.reloadToday()
+        refreshNotifications()
       }
     } catch (failure) {
       if (mounted.current) setError(apiError(failure))
@@ -343,7 +360,17 @@ function GlyphSession(props: SessionProps & { compound: boolean }) {
           </p>
         </aside>
       </div>
-      {saved.result && <SubmissionResult result={saved.result} />}
+      {saved.result && (
+        <>
+          <PracticeTodayProgress
+            today={props.today}
+            nickname={props.nickname}
+            fromToday={props.fromToday}
+            currentItemId={props.item.id}
+          />
+          <SubmissionResult result={saved.result} />
+        </>
+      )}
     </>
   )
 }
@@ -568,7 +595,50 @@ function PassageSession(props: SessionProps) {
           )}
         </aside>
       </div>
-      {saved.result && <SubmissionResult result={saved.result} />}
+      {saved.result && (
+        <>
+          <PracticeTodayProgress
+            today={props.today}
+            nickname={props.nickname}
+            fromToday={props.fromToday}
+            currentItemId={props.item.id}
+          />
+          <SubmissionResult result={saved.result} />
+        </>
+      )}
     </>
+  )
+}
+
+function PracticeTodayProgress({
+  today,
+  nickname,
+  fromToday,
+  currentItemId,
+}: {
+  today: TodayPlan | null
+  nickname: string
+  fromToday: boolean
+  currentItemId: number
+}) {
+  if (!today) return null
+  const nextItem = fromToday
+    ? (today.planItems.find(
+        (i) => i.doneToday < i.repetitions && i.itemId !== currentItemId,
+      ) ?? today.planItems.find((i) => i.doneToday < i.repetitions))
+    : undefined
+  if (today.dailyTarget == null && !nextItem) return null
+  return (
+    <div className="practice-today-after">
+      <DailyGoal today={today} nickname={nickname} compact />
+      {nextItem && (
+        <div className="practice-next-today">
+          <Link to={practiceLinkForToday(nextItem)} className="primary-button">
+            Bài tiếp theo hôm nay: {nextItem.textValue}
+            <Icon name="arrow" size={17} />
+          </Link>
+        </div>
+      )}
+    </div>
   )
 }

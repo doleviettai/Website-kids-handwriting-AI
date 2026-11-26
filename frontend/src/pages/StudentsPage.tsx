@@ -95,6 +95,10 @@ function StudentEditor({
             >
               <option value="MAU_GIAO">Mẫu giáo</option>
               <option value="LOP_1">Lớp 1</option>
+              <option value="LOP_2">Lớp 2</option>
+              <option value="LOP_3">Lớp 3</option>
+              <option value="LOP_4">Lớp 4</option>
+              <option value="LOP_5">Lớp 5</option>
             </select>
           </label>
         </div>
@@ -181,6 +185,7 @@ export function StudentsPage() {
     navigate = useNavigate()
   const [editor, setEditor] = useState<Student | 'new' | null>(null)
   const [deleting, setDeleting] = useState<Student | null>(null)
+  const [joining, setJoining] = useState<Student | null>(null)
   const [notice, setNotice] = useState('')
   function saved(student: Student) {
     setEditor(null)
@@ -270,6 +275,13 @@ export function StudentsPage() {
                   Vào góc học tập
                   <Icon name="arrow" size={18} />
                 </button>
+                <button
+                  type="button"
+                  className="text-button join-class-link"
+                  onClick={() => setJoining(student)}
+                >
+                  Nhập mã lớp cô giáo
+                </button>
               </article>
             ))}
           </div>
@@ -322,6 +334,94 @@ export function StudentsPage() {
           }}
         />
       )}
+      {joining && (
+        <JoinClassroomModal
+          student={joining}
+          onClose={() => setJoining(null)}
+          onJoined={(classroomName) => {
+            setJoining(null)
+            setNotice(
+              `Đã liên kết bé ${joining.nickname} vào ${classroomName}. Báo cáo của cô sẽ hiện ở Góc ba mẹ.`,
+            )
+          }}
+        />
+      )}
     </div>
+  )
+}
+
+function JoinClassroomModal({
+  student,
+  onClose,
+  onJoined,
+}: {
+  student: Student
+  onClose: () => void
+  onJoined: (classroomName: string) => void
+}) {
+  const [joinCode, setJoinCode] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  async function submit(event: FormEvent) {
+    event.preventDefault()
+    if (busy || !joinCode.trim()) return
+    setBusy(true)
+    setError('')
+    try {
+      const res = await api.post<{ classroomName: string }>(
+        `/students/${student.id}/join-classroom`,
+        { joinCode: joinCode.trim().toUpperCase() },
+      )
+      onJoined(res.data.classroomName)
+    } catch (failure) {
+      setError(apiError(failure))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <Modal
+      title={`Liên kết bé ${student.nickname} với lớp của cô`}
+      busy={busy}
+      onClose={onClose}
+    >
+      <p className="dialog-intro">
+        Nhập mã lớp do giáo viên chủ nhiệm cung cấp để nhận báo cáo & nhận xét
+        trực tiếp trên NétXinh.
+      </p>
+      <form className="account-form" onSubmit={(e) => void submit(e)}>
+        <label>
+          Mã mời lớp
+          <input
+            required
+            maxLength={16}
+            value={joinCode}
+            disabled={busy}
+            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+            placeholder="Ví dụ: AB12CD34"
+          />
+        </label>
+        {error && (
+          <p role="alert" className="form-error">
+            {error}
+          </p>
+        )}
+        <div className="dialog-actions">
+          <button
+            type="button"
+            className="soft-button"
+            disabled={busy}
+            onClick={onClose}
+          >
+            Hủy
+          </button>
+          <button type="submit" className="primary-button" disabled={busy}>
+            {busy ? 'Đang liên kết...' : 'Tham gia lớp'}
+          </button>
+        </div>
+      </form>
+    </Modal>
   )
 }

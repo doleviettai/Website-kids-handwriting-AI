@@ -8,12 +8,40 @@ Project kids_writing_ai {
 
 Enum user_role {
   PARENT
+  TEACHER
   ADMIN
 }
 
 Enum grade_level {
   MAU_GIAO
   LOP_1
+  LOP_2
+  LOP_3
+  LOP_4
+  LOP_5
+}
+
+Enum subject_type {
+  TIENG_VIET
+  TOAN
+}
+
+Enum grading_mode {
+  MANUAL
+  AI_ASSISTED
+}
+
+Enum invitation_status {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+Enum join_request_status {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 Enum item_type {
@@ -33,6 +61,22 @@ Enum model_task {
   SINGLE_CHAR
   COMPOUND
   PARAGRAPH
+}
+
+Enum notification_type {
+  NEEDS_REVIEW
+  NEW_COMMENT
+  TEACHER_REPORT
+  CLASS_INVITATION
+  JOIN_REQUEST
+  HOMEWORK_ASSIGNED
+  HOMEWORK_GRADED
+}
+
+Enum evaluation_rating {
+  HOAN_THANH_TOT
+  HOAN_THANH
+  CAN_CO_GANG
 }
 
 // ============ NGƯỜI DÙNG ============
@@ -153,5 +197,164 @@ Table student_progress {
 
   indexes {
     (student_id, item_id) [pk]
+  }
+}
+
+
+// ============ MỤC TIÊU, KẾ HOẠCH, NHẬN XÉT & THÔNG BÁO (V4) ============
+Table student_goals {
+  student_id bigint [pk, ref: - students.id]
+  daily_target tinyint [not null, note: '1..30 bài/ngày']
+  updated_at datetime [default: `now()`]
+}
+
+Table practice_plans {
+  id bigint [pk, increment]
+  student_id bigint [not null, ref: > students.id]
+  title varchar(100) [not null]
+  start_date date [not null]
+  end_date date [not null]
+  created_at datetime [default: `now()`]
+
+  indexes {
+    (student_id, start_date, end_date)
+  }
+}
+
+Table practice_plan_items {
+  plan_id bigint [not null, ref: > practice_plans.id]
+  item_id bigint [not null, ref: > writing_items.id]
+  repetitions tinyint [not null, note: '1..10 lượt/ngày']
+  sort_order int [default: 0]
+
+  indexes {
+    (plan_id, item_id) [pk]
+  }
+}
+
+Table submission_comments {
+  id bigint [pk, increment]
+  submission_id bigint [not null, ref: > submissions.id]
+  author_id bigint [not null, ref: > users.id]
+  content varchar(1000) [not null]
+  created_at datetime [default: `now()`]
+
+  indexes {
+    (submission_id, created_at)
+  }
+}
+
+Table notifications {
+  id bigint [pk, increment]
+  recipient_id bigint [not null, ref: > users.id]
+  type notification_type [not null]
+  submission_id bigint [ref: > submissions.id]
+  student_id bigint [ref: > students.id]
+  title varchar(150) [not null]
+  message varchar(500) [not null]
+  read_at datetime [note: 'NULL = chưa đọc']
+  created_at datetime [default: `now()`]
+
+  indexes {
+    (recipient_id, read_at, created_at)
+  }
+}
+
+
+// ============ GIÁO VIÊN CHỦ NHIỆM, LỚP HỌC, BÀI TẬP VỀ NHÀ & SỔ ĐIỂM (V5 + V6) ============
+Table classrooms {
+  id bigint [pk, increment]
+  teacher_id bigint [not null, ref: > users.id]
+  name varchar(100) [not null]
+  school_year varchar(30) [not null]
+  grade_level grade_level [not null]
+  join_code varchar(16) [unique, not null]
+  created_at datetime [default: `now()`]
+}
+
+Table classroom_enrollments {
+  id bigint [pk, increment]
+  classroom_id bigint [not null, ref: > classrooms.id]
+  student_id bigint [ref: > students.id]
+  display_name varchar(80) [not null]
+  birth_year smallint
+  parent_name_note varchar(100) [note: 'V6: ghi chú tên phụ huynh riêng trong lớp']
+  parent_phone varchar(25) [note: 'V6: số điện thoại liên hệ phụ huynh trong lớp']
+  teacher_note varchar(500) [note: 'V6: ghi chú của giáo viên về học sinh']
+  joined_at datetime [default: `now()`]
+
+  indexes {
+    (classroom_id, student_id) [unique]
+  }
+}
+
+Table review_batches {
+  id bigint [pk, increment]
+  classroom_id bigint [not null, ref: > classrooms.id]
+  title varchar(150) [not null]
+  subject subject_type [not null, default: 'TIENG_VIET', note: 'V6: TIENG_VIET hoặc TOAN']
+  description varchar(2000) [note: 'V6: nội dung đề bài tập về nhà']
+  batch_date date [not null]
+  due_at datetime [note: 'V6: hạn nộp bài tập']
+  required_pages tinyint [not null, default: 1, note: 'V6: số trang ảnh yêu cầu (1..10)']
+  is_homework boolean [not null, default: false, note: 'V6: phân biệt bài tập về nhà và đợt chấm tại lớp']
+  notes varchar(500)
+  created_at datetime [default: `now()`]
+}
+
+Table student_evaluations {
+  id bigint [pk, increment]
+  batch_id bigint [not null, ref: > review_batches.id]
+  enrollment_id bigint [not null, ref: > classroom_enrollments.id]
+  score decimal(4,2) [note: 'V6: điểm số 0.00..10.00']
+  rating evaluation_rating
+  grading_mode grading_mode [not null, default: 'MANUAL']
+  teacher_comment varchar(1000)
+  needs_attention boolean [not null, default: false]
+  image_url varchar(500) [note: 'Chờ tích hợp model chụp vở V5+Kids']
+  ai_metrics_json json [note: 'Chờ tích hợp model chụp vở V5+Kids']
+  submitted_at datetime [note: 'V6: thời điểm phụ huynh nộp ảnh bài tập']
+  graded_at datetime [note: 'V6: thời điểm giáo viên chấm']
+  scheduled_send_at datetime [note: 'V6: hẹn giờ tự động gửi điểm cho phụ huynh']
+  sent_to_parent_at datetime
+  updated_at datetime [default: `now()`]
+
+  indexes {
+    (batch_id, enrollment_id) [unique]
+  }
+}
+
+Table classroom_invitations {
+  id bigint [pk, increment]
+  classroom_id bigint [not null, ref: > classrooms.id]
+  enrollment_id bigint [ref: > classroom_enrollments.id]
+  invited_email varchar(255) [not null]
+  invited_user_id bigint [ref: > users.id]
+  status invitation_status [not null, default: 'PENDING']
+  created_at datetime [default: `now()`]
+  responded_at datetime
+}
+
+Table classroom_join_requests {
+  id bigint [pk, increment]
+  classroom_id bigint [not null, ref: > classrooms.id]
+  student_id bigint [not null, ref: > students.id]
+  parent_id bigint [not null, ref: > users.id]
+  message varchar(300)
+  status join_request_status [not null, default: 'PENDING']
+  created_at datetime [default: `now()`]
+  reviewed_at datetime
+}
+
+Table homework_submission_pages {
+  id bigint [pk, increment]
+  evaluation_id bigint [not null, ref: > student_evaluations.id]
+  page_number tinyint [not null]
+  image_path varchar(500) [not null]
+  original_filename varchar(255)
+  uploaded_at datetime [default: `now()`]
+
+  indexes {
+    (evaluation_id, page_number) [unique]
   }
 }

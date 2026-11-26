@@ -5,11 +5,19 @@ import { Icon } from '../components/Icons'
 import { HeroArtwork, Mascot } from '../components/Artwork'
 import { ErrorPanel, Loading } from '../components/Feedback'
 import { LessonCard } from './LessonsPage'
+import { DailyGoal } from '../components/DailyGoal'
+import { TodayPlanSection } from '../components/TodayPlan'
+import { useResource } from '../hooks/useResource'
+import type { TodayPlan } from '../api/types'
 import { gradeLabels } from '../data'
 
 export function DashboardPage() {
   const { user } = useAuth(),
     { students, selected, lessons, overview } = useWorkspace()
+  const today = useResource<TodayPlan>(
+    selected ? `/students/${selected.id}/today` : null,
+    `${selected?.id ?? ''}:${overview.data?.submissions ?? ''}`,
+  )
   if (students.loading)
     return <Loading message="Đang chuẩn bị góc học tập của bé..." />
   if (students.error)
@@ -79,6 +87,33 @@ export function DashboardPage() {
           <Icon name="down" size={14} />
         </Link>
       </div>
+      {today.data &&
+        (today.data.dailyTarget != null || today.data.planItems.length > 0 ? (
+          <div className="dashboard-today-stack">
+            <DailyGoal today={today.data} nickname={selected.nickname} />
+            <TodayPlanSection
+              items={today.data.planItems}
+              nickname={selected.nickname}
+            />
+          </div>
+        ) : (
+          <section className="panel today-invite-banner">
+            <div className="today-invite-icon">
+              <Icon name="calendar" size={24} />
+            </div>
+            <div>
+              <strong>Ba mẹ đặt mục tiêu & kế hoạch cho {selected.nickname}</strong>
+              <p>
+                Đặt số bài mỗi ngày và chọn sẵn chữ/số để bé mở vào “Bài hôm nay”
+                luyện ngay.
+              </p>
+            </div>
+            <Link to="/ke-hoach" className="soft-button">
+              Lập kế hoạch
+              <Icon name="arrow" size={16} />
+            </Link>
+          </section>
+        ))}
       <section className="welcome-hero">
         <div className="hero-copy">
           <div className="hero-eyebrow">

@@ -49,7 +49,7 @@ Luồng đã chạy: frontend → Vite proxy `/api` → Spring Boot → FastAPI/
 
 Schema thật **`kids_handwriting`**, MySQL 8.0.16, local `127.0.0.1:3306`, user local `root`. Không ghi mật khẩu trong bộ nhớ. Config local ở `backend/config/local.properties`, bị Git bỏ qua; có `.example` cho máy khác. App tìm file ở cả cwd backend và cwd gốc repo.
 
-Schema tham chiếu [database.dbml](database.dbml) có 9 bảng: `users`, `students`, `lessons`, `writing_items`, `ai_models`, `submissions`, `error_types`, `submission_errors`, `student_progress`. V1/V2 giữ nguyên. V3 thêm path model v1 và 5 mã lỗi; không thêm cột nghiệp vụ hoặc đổi bảng. Có bảng kỹ thuật `flyway_schema_history`.
+Schema tham chiếu [database.dbml](database.dbml) gồm 9 bảng nền (`users`, `students`, `lessons`, `writing_items`, `ai_models`, `submissions`, `error_types`, `submission_errors`, `student_progress`) và 5 bảng mới ở V4 (`student_goals`, `practice_plans`, `practice_plan_items`, `submission_comments`, `notifications`). V1/V2/V3 giữ nguyên, không đổi cột bảng cũ. Có bảng kỹ thuật `flyway_schema_history`.
 
 - Unique email, `(item_type,text_value)`, `(task,version)`; khóa ghép tiến độ `(student_id,item_id)`; các FK giữ đúng schema.
 - Bảng dùng `utf8mb4_0900_as_cs` để phân biệt dấu/chữ hoa-thường. Văn bản lưu theo NFC.

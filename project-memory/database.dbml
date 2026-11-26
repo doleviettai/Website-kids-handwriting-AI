@@ -35,6 +35,11 @@ Enum model_task {
   PARAGRAPH
 }
 
+Enum notification_type {
+  NEEDS_REVIEW
+  NEW_COMMENT
+}
+
 // ============ NGƯỜI DÙNG ============
 Table users {
   id bigint [pk, increment]
@@ -153,5 +158,65 @@ Table student_progress {
 
   indexes {
     (student_id, item_id) [pk]
+  }
+}
+
+
+// ============ MỤC TIÊU, KẾ HOẠCH, NHẬN XÉT & THÔNG BÁO (V4) ============
+Table student_goals {
+  student_id bigint [pk, ref: - students.id]
+  daily_target tinyint [not null, note: '1..30 bài/ngày']
+  updated_at datetime [default: `now()`]
+}
+
+Table practice_plans {
+  id bigint [pk, increment]
+  student_id bigint [not null, ref: > students.id]
+  title varchar(100) [not null]
+  start_date date [not null]
+  end_date date [not null]
+  created_at datetime [default: `now()`]
+
+  indexes {
+    (student_id, start_date, end_date)
+  }
+}
+
+Table practice_plan_items {
+  plan_id bigint [not null, ref: > practice_plans.id]
+  item_id bigint [not null, ref: > writing_items.id]
+  repetitions tinyint [not null, note: '1..10 lượt/ngày']
+  sort_order int [default: 0]
+
+  indexes {
+    (plan_id, item_id) [pk]
+  }
+}
+
+Table submission_comments {
+  id bigint [pk, increment]
+  submission_id bigint [not null, ref: > submissions.id]
+  author_id bigint [not null, ref: > users.id]
+  content varchar(1000) [not null]
+  created_at datetime [default: `now()`]
+
+  indexes {
+    (submission_id, created_at)
+  }
+}
+
+Table notifications {
+  id bigint [pk, increment]
+  recipient_id bigint [not null, ref: > users.id]
+  type notification_type [not null]
+  submission_id bigint [ref: > submissions.id]
+  student_id bigint [ref: > students.id]
+  title varchar(150) [not null]
+  message varchar(500) [not null]
+  read_at datetime [note: 'NULL = chưa đọc']
+  created_at datetime [default: `now()`]
+
+  indexes {
+    (recipient_id, read_at, created_at)
   }
 }

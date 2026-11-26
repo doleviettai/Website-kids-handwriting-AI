@@ -32,9 +32,12 @@ import { AdminErrorsPage } from './pages/admin/AdminErrorsPage'
 import { PracticePage } from './pages/PracticePage'
 import { SubmissionDetailPage } from './pages/SubmissionDetailPage'
 import { AdminReviewsPage } from './pages/admin/AdminReviewsPage'
+import { NotificationsPage } from './pages/NotificationsPage'
+import { PlanPage } from './pages/PlanPage'
+import { NotificationBell } from './components/NotificationBell'
+import { NotificationContext } from './context/notification-context'
+import { useNotifications } from './hooks/useNotifications'
 import { gradeLabels } from './data'
-import { useResource } from './hooks/useResource'
-import type { Attention, ReviewPage } from './api/types'
 import './App.css'
 import './ConnectedApp.css'
 
@@ -128,17 +131,8 @@ function NotFound() {
 function Shell() {
   const { pathname } = useLocation(),
     auth = useAuth()
-  const { students, selected, choose, overview } = useWorkspace()
-  const notices = useResource<Attention[]>(
-    selected ? `/students/${selected.id}/attention` : null,
-    String(overview.data?.submissions ?? ''),
-  )
-  const adminNotices = useResource<ReviewPage>(
-    auth.user?.role === 'ADMIN'
-      ? '/admin/reviews?onlyErrors=true&page=0'
-      : null,
-    pathname,
-  )
+  const { students, selected, choose } = useWorkspace()
+  const notificationState = useNotifications(Boolean(auth.user), pathname)
   const [menuOpen, setMenuOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
@@ -218,6 +212,12 @@ function Shell() {
           label: 'Góc luyện viết',
           end: false,
         },
+        {
+          to: '/ke-hoach',
+          icon: 'calendar',
+          label: 'Kế hoạch luyện tập',
+          end: false,
+        },
         { to: '/ho-so', icon: 'user', label: 'Hồ sơ các bé', end: false },
         {
           to: '/thanh-tich',
@@ -243,7 +243,8 @@ function Shell() {
     }
   }
   return (
-    <div className={`app-shell ${paused ? 'motion-paused' : ''}`}>
+    <NotificationContext.Provider value={notificationState}>
+      <div className={`app-shell ${paused ? 'motion-paused' : ''}`}>
       <a href="#main-content" className="skip-link">
         Đến nội dung chính
       </a>
@@ -409,19 +410,7 @@ function Shell() {
             >
               <Icon name="help" size={21} />
             </button>
-            <Link
-              className="icon-button"
-              to={admin ? '/quan-tri/bai-viet' : '/phu-huynh'}
-              aria-label="Thông báo bài viết"
-              title="Điểm cần cùng bé xem lại"
-            >
-              <Icon name="bell" size={21} />
-              {(admin
-                ? (adminNotices.data?.totalElements ?? 0) > 0
-                : (notices.data?.length ?? 0) > 0) && (
-                <span className="notification-dot" />
-              )}
-            </Link>
+            <NotificationBell />
             <span className="topbar-divider" />
             <Link
               to="/cai-dat"
@@ -471,7 +460,8 @@ function Shell() {
           </button>
         </Modal>
       )}
-    </div>
+      </div>
+    </NotificationContext.Provider>
   )
 }
 
@@ -559,6 +549,15 @@ export default function App() {
               }
             />
             <Route path="/cai-dat" element={<SettingsPage />} />
+            <Route path="/thong-bao" element={<NotificationsPage />} />
+            <Route
+              path="/ke-hoach"
+              element={
+                <RolePage role="PARENT">
+                  <PlanPage />
+                </RolePage>
+              }
+            />
             <Route
               path="/quan-tri/bai-hoc"
               element={

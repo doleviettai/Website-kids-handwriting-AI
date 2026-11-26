@@ -101,6 +101,12 @@ const paths: Record<string, ReactNode> = {
       <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1 1m12 12 1 1M5 19l1-1M18 6l1-1" />
     </>
   ),
+  calendar: (
+    <>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M16 3v4M8 3v4M3 10h18M8 14h3m2 0h3M8 18h3" />
+    </>
+  ),
 }
 export function Icon({
   name,

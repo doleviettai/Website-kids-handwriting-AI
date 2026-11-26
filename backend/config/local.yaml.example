@@ -1,0 +1,16 @@
+# Copy sang local.yaml (đã được Git bỏ qua). Không commit file thật chứa mật khẩu/secret.
+db:
+  host: 127.0.0.1
+  port: 3306
+  name: kids_handwriting
+  username: root
+  password: CHANGE_ME
+
+app:
+  bootstrap:
+    admin:
+      email: admin@netxinh.local
+      password: CHANGE_ME
+  # Tạo 32 byte ngẫu nhiên rồi mã hóa Base64. Không commit khóa thật.
+  jwt:
+    secret: CHANGE_ME_BASE64_32_BYTES

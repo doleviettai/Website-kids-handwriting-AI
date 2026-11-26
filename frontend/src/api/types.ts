@@ -172,3 +172,66 @@ export type Recognition = {
   suggestedText: string
   preview: string | null
 }
+export type GoalResponse = {
+  dailyTarget: number | null
+  updatedAt: string | null
+}
+export type PlanItem = {
+  itemId: number
+  lessonId: number | null
+  itemType: ItemType
+  textValue: string
+  repetitions: number
+  sortOrder: number
+}
+export type PracticePlan = {
+  id: number
+  studentId: number
+  title: string
+  startDate: string
+  endDate: string
+  items: PlanItem[]
+  createdAt: string
+}
+export type TodayItem = {
+  itemId: number
+  lessonId: number | null
+  itemType: ItemType
+  textValue: string
+  repetitions: number
+  doneToday: number
+}
+export type TodayPlan = {
+  date: string
+  dailyTarget: number | null
+  doneToday: number
+  goalReached: boolean
+  planItems: TodayItem[]
+}
+export type AppNotification = {
+  id: number
+  type: 'NEEDS_REVIEW' | 'NEW_COMMENT'
+  title: string
+  message: string
+  submissionId: number | null
+  studentId: number | null
+  read: boolean
+  createdAt: string
+}
+export type NotificationPage = {
+  items: AppNotification[]
+  page: number
+  totalPages: number
+  totalElements: number
+  unreadCount: number
+}
+export type UnreadCount = {
+  unreadCount: number
+}
+export type SubmissionComment = {
+  id: number
+  submissionId: number
+  authorName: string
+  content: string
+  createdAt: string
+}

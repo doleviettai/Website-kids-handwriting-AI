@@ -1,6 +1,24 @@
 # Trạng thái và bàn giao
 
-Cập nhật: 25/11/2026. Yêu cầu mới nhất: ADMIN xóa bài học thì xóa cả nội dung và lịch sử liên quan; đã xóa thật bài 1 theo yêu cầu. Phần sửa model/canvas trước đó được giữ nguyên.
+Cập nhật: 25/11/2026. Yêu cầu mới nhất: thêm mục tiêu luyện viết hằng ngày, kế hoạch luyện tập/Bài hôm nay, nhận xét ADMIN và thông báo lưu DB có trạng thái đã đọc (migration V4). Phần xóa bài học và sửa model/canvas trước đó được giữ nguyên.
+
+## Mục tiêu hằng ngày, Kế hoạch luyện tập & Thông báo đã đọc — 25/11/2026
+
+- **Database (V4)**: thêm migration `V4__Goals_plans_notifications.sql` với 5 bảng `student_goals`, `practice_plans`, `practice_plan_items`, `submission_comments`, `notifications`; đã cập nhật `project-memory/database.dbml`. Không sửa V1/V2/V3 hay 9 bảng gốc.
+- **Backend**:
+  - `PlanningController` / `PlanningService`: CRUD mục tiêu hằng ngày (`/api/students/{id}/goal`, 1–30 bài/ngày), CRUD kế hoạch luyện tập (`/api/students/{id}/plans`, khoảng ngày ≤ 31 ngày, mỗi nội dung 1–10 lượt/ngày), và `/api/students/{id}/today` (đếm bài theo ngày `Asia/Ho_Chi_Minh`, gộp lượt nếu nhiều kế hoạch trùng nội dung).
+  - `NotificationController` / `NotificationService` / `CommentService`: lưu thông báo trong DB (`NEEDS_REVIEW` khi có `LOW_CONFIDENCE`/`WRONG_TEXT` cho PARENT chủ bài và từng ADMIN trong cùng transaction lưu bài; `NEW_COMMENT` khi ADMIN gửi nhận xét ở `/api/admin/submissions/{id}/comments`). Có API đếm chưa đọc, danh sách phân trang/lọc chưa đọc, đánh dấu đã đọc từng mục hoặc tất cả.
+  - Cascade xóa: `AdminContentService.deleteLesson` xóa kèm `notifications`, `submission_comments`, `practice_plan_items`; `deleteItem` xóa kèm `practice_plan_items`; `StudentService.delete` (hồ sơ chưa có lịch sử) xóa kèm mục tiêu, kế hoạch và thông báo theo bé.
+  - Test Java mới: `PlanningApiTests`, `NotificationApiTests`.
+- **Frontend**:
+  - Trang `/ke-hoach` (`PlanPage`): đặt/tắt mục tiêu hằng ngày, CRUD kế hoạch luyện tập chọn từ thư viện.
+  - Dashboard (`DashboardPage`) & Luyện viết (`PracticePage`): `DailyGoal` (thanh tiến độ + lời chúc Pip khi đạt mục tiêu), `TodayPlanSection` (“Bài hôm nay” mở thẳng canvas luyện viết kèm nút “Bài tiếp theo hôm nay”).
+  - Chuông header (`NotificationBell` popover + badge số chưa đọc, polling 60s + focus + đổi trang) và trang `/thong-bao` (`NotificationsPage`).
+  - Trang chi tiết bài viết (`SubmissionDetailPage`): danh sách nhận xét và form gửi nhận xét cho ADMIN.
+- **Kiểm tra đã chạy**:
+  - Backend: `.\gradlew.bat test bootJar` với JDK 21 và MySQL thật `kids_handwriting` — **28/28 test Java đạt** (gồm 22 test cũ + `PlanningApiTests` + `NotificationApiTests`), Flyway `V1 → V4` và Hibernate `validate` thành công. Hỗ trợ thêm cấu hình local dạng `backend/config/local.yaml` (được Git bỏ qua, có `local.yaml.example`).
+  - Frontend: `npm run build` (`tsc -b && vite build`) và `npm run lint` đạt (0 lỗi, 0 cảnh báo).
+  - Chưa chạy E2E Playwright full-stack trên máy này.
 
 ## Xóa bài học kèm lịch sử — 25/11/2026
 

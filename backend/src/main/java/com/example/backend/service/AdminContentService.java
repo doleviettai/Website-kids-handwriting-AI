@@ -47,6 +47,20 @@ public class AdminContentService {
             throw missing("Không tìm thấy bài học.");
         jdbc.queryForList("SELECT id FROM writing_items WHERE lesson_id=? ORDER BY id FOR UPDATE", Long.class, id);
         jdbc.update("""
+                DELETE n FROM notifications n
+                JOIN submissions s ON s.id=n.submission_id
+                JOIN writing_items wi ON wi.id=s.item_id WHERE wi.lesson_id=?
+                """, id);
+        jdbc.update("""
+                DELETE c FROM submission_comments c
+                JOIN submissions s ON s.id=c.submission_id
+                JOIN writing_items wi ON wi.id=s.item_id WHERE wi.lesson_id=?
+                """, id);
+        jdbc.update("""
+                DELETE pi FROM practice_plan_items pi
+                JOIN writing_items wi ON wi.id=pi.item_id WHERE wi.lesson_id=?
+                """, id);
+        jdbc.update("""
                 DELETE se FROM submission_errors se
                 JOIN submissions s ON s.id=se.submission_id
                 JOIN writing_items wi ON wi.id=s.item_id WHERE wi.lesson_id=?
@@ -96,6 +110,7 @@ public class AdminContentService {
     public void deleteItem(long id) {
         WritingItem item = items.findById(id).orElseThrow(() -> missing("Không tìm thấy nội dung này."));
         if (usedItem(id)) throw conflict("Nội dung đã có bài viết hoặc tiến độ của bé nên chưa thể xóa. Bạn có thể chỉnh mẫu nét hoặc chuyển nội dung sang bài khác.");
+        jdbc.update("DELETE FROM practice_plan_items WHERE item_id=?", id);
         items.delete(item); items.flush();
     }
 

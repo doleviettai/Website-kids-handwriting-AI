@@ -1,6 +1,16 @@
 # Kid Handwriting AI — ngữ cảnh hiện tại
 
-Cập nhật: 25/11/2026. Nguồn: yêu cầu người dùng và code đã triển khai/kiểm tra trong repo.
+Cập nhật: 27/11/2026 (khảo sát code và metadata database; không triển khai tính năng mới). Nguồn: yêu cầu người dùng, code và kết quả kiểm tra ghi trong STATUS.md.
+
+## Đối chiếu code và database khi tạo skill — 27/11/2026
+
+Phạm vi lượt này chỉ khảo sát và hoàn thiện skill `.claude/skills/learning-management/SKILL.md`, kèm `references/project-map.md`; chưa triển khai các tính năng quản lý học tập mới. Các mô tả cũ bên dưới cần đọc cùng kết quả đối chiếu này.
+
+- Code hiện có ba role PARENT/TEACHER/ADMIN, cấp học MAU_GIAO đến LOP_5, lớp/đợt chấm/bài tập giáo viên, mục tiêu/kế hoạch, nhận xét Admin tạo/xem, thông báo lưu DB có đã đọc và ảnh vở nhiều trang có kiểm tra quyền. Model nét online đã nối thật; model V5+Kids chấm ảnh vở vẫn chờ tích hợp. Không suy ra việc upload ảnh đồng nghĩa ba model online hỗ trợ CAMERA.
+- Metadata chỉ đọc xác nhận MySQL **8.4.4**, database kids_handwriting, **21 bảng nghiệp vụ**, Flyway V1–V7 success. Con số MySQL 8.0.16, schema chỉ tới V4, “chưa có đã đọc/upload” ở phần mô tả cũ không còn phản ánh đầy đủ workspace hiện tại.
+- DBML là tham chiếu và hiện lệch V6/database ở một số cột/bảng: classroom_invitations, homework_submission_pages, graded_at của student_evaluations, độ dài ghi chú liên hệ lớp và kiểu description của review_batches. Tên cột/kiểu/index thật ghi tại tài liệu tham chiếu của skill; không sửa migration hay schema theo DBML chưa khớp.
+- Ba nhóm nghiệp vụ của skill là mục tiêu cho lần triển khai được giao: (A) mở rộng sửa nhận xét Admin và lịch sử phụ huynh hỗ trợ/ghi chú riêng, (B) báo cáo học tập PDF theo bé/khoảng ngày từ backend, (C) bài học DRAFT/PUBLISHED có audit. Các phần mới này **chưa triển khai**; không có cột/endpoint/dependency PDF hoặc status bài học trong code hiện tại.
+- Báo cáo phải phân biệt predicted_text/confidence, text_accuracy/is_correct, tiêu chí geometry nullable và total_score đã kết hợp nội dung với geometry. Không có một cột “điểm nhận dạng” độc lập; không đổi công thức/model để bổ sung số liệu báo cáo.
 
 ## Chính sách xóa bài học mới nhất
 

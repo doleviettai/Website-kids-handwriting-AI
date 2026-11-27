@@ -1,6 +1,18 @@
 # Trạng thái và bàn giao
 
-Cập nhật: 26/11/2026. Yêu cầu mới nhất: hoàn thành **Pha 1 + Pha 2 mở rộng lớp học, bài tập về nhà (Toán & Tiếng Việt), nộp ảnh vở nhiều trang, chấm điểm thủ công + hẹn giờ gửi điểm, sổ điểm giáo viên, tìm/xin vào lớp & mời phụ huynh, và Admin xem lớp giáo viên dạy** (migration `V6`, mở rộng cấp học Mẫu giáo → Lớp 5). Pha 3 (nút "Chấm nhanh AI" gọi model V5+Kids sau khi train xong trên Colab) đã chừa sẵn trạng thái chờ tích hợp trên UI và DB (`grading_mode`, `ai_metrics_json`).
+Cập nhật: 27/11/2026 — khảo sát và hoàn thiện skill, không triển khai chức năng. Mốc triển khai ứng dụng 26/11/2026: hoàn thành **Pha 1 + Pha 2 mở rộng lớp học, bài tập về nhà (Toán & Tiếng Việt), nộp ảnh vở nhiều trang, chấm điểm thủ công + hẹn giờ gửi điểm, sổ điểm giáo viên, tìm/xin vào lớp & mời phụ huynh, và Admin xem lớp giáo viên dạy** (migration `V6`, mở rộng cấp học Mẫu giáo → Lớp 5). Pha 3 (nút "Chấm nhanh AI" gọi model V5+Kids sau khi train xong trên Colab) đã chừa sẵn trạng thái chờ tích hợp trên UI và DB (`grading_mode`, `ai_metrics_json`).
+
+## Skill quản lý học tập — 27/11/2026
+
+- Hoàn thiện `.claude/skills/learning-management/SKILL.md` từ file trước đó chứa nguyên đề bài, bổ sung YAML name/description và hướng dẫn dùng trong Claude Code. Tạo `references/project-map.md` cùng thư mục để chỉ điểm mở rộng code, API đang có, khoảng trống và khác biệt schema.
+- Skill bao quát A: nhận xét Admin, xác nhận/ghi chú riêng/lịch sử hỗ trợ; B: preview/PDF tiếng Việt từ dữ liệu backend, phân biệt recognition/confidence/textAccuracy/geometry/total; C: DRAFT/PUBLISHED, audit, backfill và bảo vệ nháp trên mọi đường lấy nội dung. Có quy trình triển khai, ma trận quyền, kiểm thử và checklist.
+- Khảo sát tài liệu bắt buộc, backend/frontend/AI liên quan và test hiện có. Query metadata MySQL trong transaction READ ONLY rồi ROLLBACK xác nhận server **8.4.4**, schema kids_handwriting, **21 bảng nghiệp vụ + flyway_schema_history**, **V1–V7 đều success**; không đọc dữ liệu riêng của trẻ. Không khởi động backend để tránh Flyway tự áp dụng migration.
+- Hiện đã có Admin tạo/xem nhận xét, thông báo có trạng thái đã đọc, mục tiêu/kế hoạch, TEACHER/lớp/bài tập và upload ảnh vở. Chưa có sửa nhận xét Admin, hỗ trợ luyện lại/ghi chú riêng/lịch sử hỗ trợ, báo cáo PDF PARENT, trạng thái DRAFT/PUBLISHED hay audit bài học.
+- DBML chưa khớp V6/database ở classroom_invitations (parent_email/invited_by), homework_submission_pages (storage_path/content_type/file_size và index thường), student_evaluations (không có graded_at), kích thước parent_phone/teacher_note và review_batches.description (TEXT). Chi tiết ở tài liệu tham chiếu của skill; chưa sửa DBML hoặc migration trong phạm vi này.
+- Kiểm tra skill: parse YAML bằng parser yaml sẵn có trong Playwright đạt; name/description, fence Markdown và 24 đường dẫn code/tài liệu cụ thể đạt. `skill-creator/scripts/quick_validate.py` không chạy được do thiếu PyYAML; không cài thư viện. Đây là kiểm tra tài liệu, chưa thử gọi skill trong phiên Claude Code.
+- Không sửa code Backend/Frontend/AI, database, dependency; không tạo agent/command. Không chạy test/build/lint/E2E ứng dụng trong lượt chỉ sửa skill/tài liệu. Giữ các kết quả test trước ở những mục lịch sử bên dưới.
+- Workspace hiện không có metadata Git ở gốc, không có diff nền. Chỉ ghi skill, một tài liệu tham chiếu và cập nhật hai file bộ nhớ.
+- Quyết định để lần triển khai xác định: quyền Admin sửa nhận xét người khác/đọc ghi chú riêng, quy tắc thời gian báo cáo, engine/font PDF, backfill trạng thái/audit bài cũ, điều kiện xuất bản và lịch sử/kế hoạch khi thu hồi bài. Không xem các mục này là tính năng đã làm.
 
 ## Lớp học, Bài tập về nhà, Sổ điểm & Luồng Phụ huynh–Giáo viên (Pha 1 + Pha 2) — 26/11/2026
 
